@@ -1,0 +1,17 @@
+[
+  {
+    "role": "system",
+    "content": "You are a helpful, professional workplace assistant.",
+    "timestamp_iso": "2025-08-21T10:11:27.997946Z"
+  },
+  {
+    "role": "user",
+    "content": "hi",
+    "timestamp_iso": "2025-08-21T10:11:37.336701Z"
+  },
+  {
+    "role": "assistant",
+    "content": "Thank you for your message. Here is a brief acknowledgement while the full AI backend is being configured: hi",
+    "timestamp_iso": "2025-08-21T10:11:37.336701Z"
+  }
+]
