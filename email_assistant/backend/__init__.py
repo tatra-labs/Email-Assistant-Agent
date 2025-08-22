@@ -1,0 +1,1 @@
+# Backend package - contains API endpoints, services, and business logic 
