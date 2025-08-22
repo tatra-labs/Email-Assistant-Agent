@@ -14,6 +14,11 @@ Email-Assistant-Agent/
 │   │   ├── models/          # Data models
 │   │   │   ├── session_models.py
 │   │   │   └── session_state.py
+│   │   ├── database/        # Database configuration and models
+│   │   │   ├── config.py    # Database connection
+│   │   │   ├── models.py    # SQLAlchemy models
+│   │   │   ├── repositories.py # Data access layer
+│   │   │   └── init_db.py   # Database initialization
 │   │   ├── engine/          # AI engine (LLM + LangGraph)
 │   │   │   ├── llm/         # LLM providers
 │   │   │   │   ├── base.py  # Base LLM interface
@@ -22,10 +27,9 @@ Email-Assistant-Agent/
 │   │   │   │   └── email_workflow.py
 │   │   │   └── agents/      # AI agents
 │   │   │       └── email_assistant_agent.py
-│   │   ├── main.py          # FastAPI application
+│   │   └── main.py          # FastAPI application
 │   ├── cli/                 # CLI interface
 │   │   ├── cli.py           # Main CLI logic
-│   │   ├── session.py       # Session management
 │   │   ├── backends.py      # Backend factory
 │   │   ├── dummy.py         # Local mock backend
 │   │   └── fastapi_backend.py # FastAPI HTTP client
@@ -34,6 +38,7 @@ Email-Assistant-Agent/
 │   ├── __init__.py          # Package initializer
 │   └── __main__.py          # Module entry point
 ├── run_server.py            # Server startup script
+├── init_database.py         # Database initialization script
 └── requirements.txt         # Python dependencies
 ```
 
@@ -51,6 +56,7 @@ Email-Assistant-Agent/
 ### **Backend Layer** (`email_assistant/backend/`)
 - **API Routes**: FastAPI endpoints for session management
 - **Services**: Business logic that calls core functions
+- **Database**: SQLAlchemy models and repositories for data persistence
 - **Engine**: AI processing with LangGraph and LLM integration
 
 ### **CLI Layer** (`email_assistant/cli/`)
@@ -66,7 +72,19 @@ Email-Assistant-Agent/
 pip install -r requirements.txt
 ```
 
-### 2. Start the FastAPI Server
+### 2. Initialize Database
+
+```bash
+# Initialize database with tables and sample data
+python init_database.py
+```
+
+This will create:
+- `email_assistant.db` SQLite database file
+- Tables for sessions, messages, persons, and files
+- Sample data for testing
+
+### 3. Start the FastAPI Server
 
 ```bash
 # Option 1: Using the startup script
@@ -78,7 +96,7 @@ uvicorn email_assistant.backend.main:app --host 0.0.0.0 --port 8000 --reload
 
 The server will be available at `http://localhost:8000`
 
-### 3. Use the CLI
+### 4. Use the CLI
 
 ```bash
 # From the repository root
@@ -133,13 +151,52 @@ python -m email_assistant session_create --backend dummy
 python -m email_assistant session_create --backend fastapi
 ```
 
+## Database Schema
+
+### **Core Entities**
+
+1. **Person** - Message sender and receiver
+   - `id`: UUID primary key
+   - `full_name`: Full name
+   - `email_address`: Email address
+   - `phone_number`: Phone number
+
+2. **Session** - Email conversation session
+   - `session_id`: UUID primary key
+   - `summary`: Session summary text
+   - `created_at`: Creation timestamp
+   - `updated_at`: Last update timestamp
+
+3. **Message** - Individual messages within a session
+   - `message_id`: UUID primary key
+   - `session_id`: Foreign key to Session
+   - `sender_id`: Foreign key to Person (sender)
+   - `receiver_id`: Foreign key to Person (receiver)
+   - `message_text`: Message content
+   - `created_at`: Creation timestamp
+
+4. **MessageFile** - File attachments for messages
+   - `id`: UUID primary key
+   - `message_id`: Foreign key to Message
+   - `file_path`: File path on disk
+   - `file_content`: Parsed text content
+   - `file_type`: File type (pdf, docx, txt, etc.)
+   - `file_size`: File size
+
+### **Relationships**
+- One Session has many Messages
+- One Message has many MessageFiles
+- One Person can be sender/receiver of many Messages
+- Cascade deletes ensure data integrity
+
 ## Key Benefits
 
 1. **Unified Architecture**: CLI and backend use identical core functions
 2. **Single Source of Truth**: All business logic is in one place
-3. **Easy Testing**: Core functions can be tested independently
-4. **Consistent Behavior**: CLI and API behave identically
-5. **Maintainable**: Changes to core logic affect both interfaces
+3. **Persistent Storage**: SQLite database for session and message persistence
+4. **Easy Testing**: Core functions can be tested independently
+5. **Consistent Behavior**: CLI and API behave identically
+6. **Scalable**: Easy to add new LLM providers and workflows
 
 ## Roadmap
 
@@ -147,4 +204,5 @@ python -m email_assistant session_create --backend fastapi
 - Email parsing (text/PDF) and structured extraction
 - Draft reply generation and tone control
 - Iterative refinement and saving drafts to file
-- Database persistence for sessions
+- PostgreSQL/MySQL support for production
+- File upload and parsing endpoints
