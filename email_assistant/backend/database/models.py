@@ -33,14 +33,18 @@ class Session(Base):
     
     session_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     summary = Column(Text, nullable=True)
+    sender_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
+    receiver_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
     messages = relationship("Message", back_populates="session", cascade="all, delete-orphan")
+    sender = relationship("Person", foreign_keys=[sender_id], backref="sessions_sent")
+    receiver = relationship("Person", foreign_keys=[receiver_id], backref="sessions_received")
     
     def __repr__(self):
-        return f"<Session(id={self.session_id})>"
+        return f"<Session(id={self.session_id}, sender={self.sender_id}, receiver={self.receiver_id})>"
 
 
 class Message(Base):
@@ -49,16 +53,12 @@ class Message(Base):
     
     message_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     session_id = Column(UUID(as_uuid=True), ForeignKey("sessions.session_id"), nullable=False)
-    sender_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
-    receiver_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
     message_text = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
     session = relationship("Session", back_populates="messages")
-    sender = relationship("Person", foreign_keys=[sender_id], back_populates="sent_messages")
-    receiver = relationship("Person", foreign_keys=[receiver_id], back_populates="received_messages")
     files = relationship("MessageFile", back_populates="message", cascade="all, delete-orphan")
     
     def __repr__(self):
@@ -121,6 +121,8 @@ class SQLiteSession(Base):
     
     session_id = Column(SQLiteUUID(), primary_key=True, default=uuid.uuid4)
     summary = Column(Text, nullable=True)
+    sender_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
+    receiver_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -131,8 +133,6 @@ class SQLiteMessage(Base):
     
     message_id = Column(SQLiteUUID(), primary_key=True, default=uuid.uuid4)
     session_id = Column(SQLiteUUID(), ForeignKey("sessions.session_id"), nullable=False)
-    sender_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
-    receiver_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     message_text = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

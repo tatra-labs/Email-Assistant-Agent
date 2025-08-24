@@ -24,6 +24,6 @@ class SessionManager:
         """Process a chat message and get AI response."""
         return await self.ai_agent.process_message(session_id, content)
     
-    def get_session_info(self, session_id: str) -> Optional[Dict[str, Any]]:
-        """Get session information."""
-        return self.ai_agent.get_session_info(session_id) 
+    # def get_session_info(self, session_id: str) -> Optional[Dict[str, Any]]:
+    #     """Get session information."""
+    #     return self.ai_agent.get_session_info(session_id) 
