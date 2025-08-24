@@ -37,14 +37,6 @@ class FastAPIBackend(BaseLLMBackend):
         except httpx.RequestError as e:
             raise Exception(f"Request failed: {e}")
     
-    def chat_completion(self, messages: List[Dict[str, str]]) -> str:
-        """Generate chat completion - not implemented for FastAPI backend."""
-        raise NotImplementedError("chat_completion not available in FastAPI backend")
-    
-    def get_structured_output(self, prompt: str, schema: Dict[str, Any]) -> Dict[str, Any]:
-        """Get structured output - not implemented for FastAPI backend."""
-        raise NotImplementedError("get_structured_output not available in FastAPI backend")
-    
     def session_create(self) -> str:
         """Create a new session via FastAPI."""
         import asyncio

@@ -16,13 +16,7 @@ class BaseLLMBackend(Protocol):
 	- session_edit: edit a message in a session
 	- session_chat: add a message to a session and get response
 	"""
-
-	def chat_completion(self, messages: List[Dict[str, str]]) -> str:
-		...
-
-	def get_structured_output(self, prompt: str, schema: Dict[str, Any]) -> Dict[str, Any]:
-		...
-
+	
 	def session_create(self) -> str:
 		"""Create a new session and return session ID."""
 		...

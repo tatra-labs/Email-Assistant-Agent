@@ -24,6 +24,6 @@ class SessionService:
         """Process a chat message and get AI response."""
         return await self.session_manager.chat_message(session_id, content)
     
-    def get_session_info(self, session_id: str) -> Optional[dict]:
-        """Get session information."""
-        return self.session_manager.get_session_info(session_id) 
+    # def get_session_info(self, session_id: str) -> Optional[dict]:
+    #     """Get session information."""
+    #     return self.session_manager.get_session_info(session_id) 

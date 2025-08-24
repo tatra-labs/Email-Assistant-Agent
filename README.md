@@ -31,7 +31,6 @@ Email-Assistant-Agent/
 │   ├── cli/                 # CLI interface
 │   │   ├── cli.py           # Main CLI logic
 │   │   ├── backends.py      # Backend factory
-│   │   ├── dummy.py         # Local mock backend
 │   │   └── fastapi_backend.py # FastAPI HTTP client
 │   ├── core/                # Shared core functionality
 │   │   └── session_manager.py # Core session manager
@@ -101,9 +100,9 @@ The server will be available at `http://localhost:8000`
 ```bash
 # From the repository root
 python -m email_assistant help
-python -m email_assistant session_create --backend fastapi
-python -m email_assistant session_chat --backend fastapi --session_id <session_id> --content "Hello, how are you?"
-python -m email_assistant session_delete --backend fastapi --session_id <session_id>
+python -m email_assistant session_create
+python -m email_assistant session_chat --session_id <session_id> --content "Hello, how are you?"
+python -m email_assistant session_delete --session_id <session_id>
 ```
 
 ### Available Commands
@@ -118,16 +117,16 @@ python -m email_assistant session_delete --backend fastapi --session_id <session
 
 ```bash
 # Create a new session
-python -m email_assistant session_create --backend fastapi
+python -m email_assistant session_create
 
 # Chat with the assistant (replace abc123 with actual session ID)
-python -m email_assistant session_chat --backend fastapi --session_id abc123 --content "Hello, can you help me draft an email?"
+python -m email_assistant session_chat --session_id abc123 --content "Hello, can you help me draft an email?"
 
 # Edit a message in the session
-python -m email_assistant session_edit --backend fastapi --session_id abc123 --element_id 1 --content "Updated message content"
+python -m email_assistant session_edit --session_id abc123 --element_id 1 --content "Updated message content"
 
 # Delete the session
-python -m email_assistant session_delete --backend fastapi --session_id abc123
+python -m email_assistant session_delete --session_id abc123
 ```
 
 ### API Documentation
@@ -136,20 +135,6 @@ Once the server is running, you can access:
 - **Interactive API docs**: http://localhost:8000/docs
 - **ReDoc documentation**: http://localhost:8000/redoc
 - **Health check**: http://localhost:8000/health
-
-### Backend Options
-
-The CLI supports multiple backends:
-- `dummy` (default): Local mock implementation
-- `fastapi`: Connect to FastAPI server with LangGraph engine
-
-```bash
-# Use dummy backend (no server required)
-python -m email_assistant session_create --backend dummy
-
-# Use FastAPI backend (requires server running)
-python -m email_assistant session_create --backend fastapi
-```
 
 ## Database Schema
 
