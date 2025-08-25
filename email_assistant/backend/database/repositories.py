@@ -60,12 +60,13 @@ class SessionRepository:
     def __init__(self, db: Session):
         self.db = db
     
-    def create(self, sender_id: Optional[str], receiver_id: Optional[str]) -> DBSession:
+    def create(self, sender_id: str, receiver_id: str, summary: str) -> DBSession:
         """Create a new session."""
         session = DBSession(
-            session_id=uuid.uuid4(),
+            session_id=str(uuid.uuid4()),
             sender_id=sender_id,
-            receiver_id=receiver_id
+            receiver_id=receiver_id,
+            summary=summary
         )
         self.db.add(session)
         self.db.commit()

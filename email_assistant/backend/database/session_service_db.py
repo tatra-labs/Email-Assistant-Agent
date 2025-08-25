@@ -19,12 +19,12 @@ class DatabaseSessionService:
             self.db = next(get_db())
         return self.db
     
-    def create_session(self, sender_id: Optional[str], receiver_id: Optional[str]) -> str:
+    def create_session(self, sender_id: str, receiver_id: str, summary: str) -> str:
         """Create a new session in the database."""
         try:
             db = self._get_db()
             session_repo = SessionRepository(db)
-            session = session_repo.create(sender_id, receiver_id)
+            session = session_repo.create(sender_id, receiver_id, summary)
             return str(session.session_id)
         except Exception as e:
             raise e
