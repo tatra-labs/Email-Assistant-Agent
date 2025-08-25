@@ -2,6 +2,12 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 
+class SessionCreateRequest(BaseModel):
+    """Request model for session deletion."""
+    sender_id: str = Field(..., description="User ID of the sender")
+    receiver_id: str = Field(..., description="User ID of the receiver")
+
+
 class SessionCreateResponse(BaseModel):
     """Response model for session creation."""
     success: bool = Field(..., description="Whether the operation was successful")

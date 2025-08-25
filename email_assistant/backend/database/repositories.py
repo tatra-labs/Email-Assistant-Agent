@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 import uuid
 
-from .models import Person, Session as DBSession, Message, MessageFile
+from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteMessageFile as MessageFile
 
 
 class PersonRepository:
@@ -15,7 +15,7 @@ class PersonRepository:
     def create(self, full_name: str, email_address: Optional[str] = None, phone_number: Optional[str] = None) -> Person:
         """Create a new person."""
         person = Person(
-            id=uuid.uuid4(),
+            id=str(uuid.uuid4()),
             full_name=full_name,
             email_address=email_address,
             phone_number=phone_number
@@ -60,11 +60,12 @@ class SessionRepository:
     def __init__(self, db: Session):
         self.db = db
     
-    def create(self, summary: Optional[str] = None) -> DBSession:
+    def create(self, sender_id: Optional[str], receiver_id: Optional[str]) -> DBSession:
         """Create a new session."""
         session = DBSession(
             session_id=uuid.uuid4(),
-            summary=summary
+            sender_id=sender_id,
+            receiver_id=receiver_id
         )
         self.db.add(session)
         self.db.commit()
@@ -104,14 +105,11 @@ class MessageRepository:
     def __init__(self, db: Session):
         self.db = db
     
-    def create(self, session_id: uuid.UUID, sender_id: uuid.UUID, receiver_id: uuid.UUID, 
-               message_text: str) -> Message:
+    def create(self, session_id: uuid.UUID, message_text: str) -> Message:
         """Create a new message."""
         message = Message(
             message_id=uuid.uuid4(),
             session_id=session_id,
-            sender_id=sender_id,
-            receiver_id=receiver_id,
             message_text=message_text
         )
         self.db.add(message)

@@ -4,7 +4,7 @@ import uuid
 
 from .config import get_db
 from .repositories import SessionRepository, MessageRepository, PersonRepository, MessageFileRepository
-from .models import Person, Session as DBSession, Message, MessageFile
+from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteMessageFile as MessageFile
 
 
 class DatabaseSessionService:
@@ -19,12 +19,15 @@ class DatabaseSessionService:
             self.db = next(get_db())
         return self.db
     
-    def create_session(self, summary: Optional[str] = None) -> str:
+    def create_session(self, sender_id: Optional[str], receiver_id: Optional[str]) -> str:
         """Create a new session in the database."""
-        db = self._get_db()
-        session_repo = SessionRepository(db)
-        session = session_repo.create(summary)
-        return str(session.session_id)
+        try:
+            db = self._get_db()
+            session_repo = SessionRepository(db)
+            session = session_repo.create(sender_id, receiver_id)
+            return str(session.session_id)
+        except Exception as e:
+            raise e
     
     def delete_session(self, session_id: str) -> bool:
         """Delete a session from the database."""
@@ -68,8 +71,6 @@ class DatabaseSessionService:
             message_repo = MessageRepository(db)
             message = message_repo.create(
                 session_id=session_uuid,
-                sender_id=sender.id,
-                receiver_id=receiver.id,
                 message_text=content
             )
             
@@ -80,8 +81,6 @@ class DatabaseSessionService:
             # Create AI response message
             ai_message = message_repo.create(
                 session_id=session_uuid,
-                sender_id=sender.id,
-                receiver_id=receiver.id,
                 message_text=ai_response
             )
             
@@ -132,13 +131,13 @@ class DatabaseSessionService:
                         "name": msg.receiver.full_name,
                         "email": msg.receiver.email_address
                     },
-                    "created_at": msg.created_at.isoformat() if msg.created_at else None,
+                    "created_at": msg.created_at.isoformat() if msg.created_at else None, # type: ignore
                     "files": []
                 }
                 
                 # Add file information
                 file_repo = MessageFileRepository(db)
-                files = file_repo.get_by_message(msg.message_id)
+                files = file_repo.get_by_message(msg.message_id) # type: ignore
                 for file in files:
                     message_data["files"].append({
                         "id": str(file.id),

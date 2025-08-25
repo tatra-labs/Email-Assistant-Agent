@@ -33,11 +33,11 @@ def handle_help() -> int:
     return 0
 
 
-def handle_session_create() -> int:
+def handle_session_create(sender_id: str, receiver_id: str) -> int:
     """Create a new session and return session ID."""
     try:
         backend = get_backend()
-        session_id = backend.session_create()
+        session_id = backend.session_create(sender_id, receiver_id)
         print(f"Session created successfully. Session ID: {session_id}")
         return 0
     except Exception as e:
@@ -45,7 +45,7 @@ def handle_session_create() -> int:
         return 1
 
 
-def handle_session_delete(session_id: str, backend_name: str = "fastapi") -> int:
+def handle_session_delete(session_id: str) -> int:
     """Delete session with given ID."""
     if not session_id:
         print("Error: session_id is required")
@@ -65,7 +65,7 @@ def handle_session_delete(session_id: str, backend_name: str = "fastapi") -> int
         return 1
 
 
-def handle_session_edit(session_id: str, message_id: str, message_content: str, backend_name: str = "fastapi") -> int:
+def handle_session_edit(session_id: str, message_id: str, message_content: str) -> int:
     """Edit message in session."""
     if not session_id or not message_id or not message_content:
         print("Error: session_id, message_id, and message_content are required")
@@ -85,7 +85,7 @@ def handle_session_edit(session_id: str, message_id: str, message_content: str, 
         return 1
 
 
-def handle_session_chat(session_id: str, message_content: str, backend_name: str = "fastapi") -> int:
+def handle_session_chat(session_id: str, message_content: str) -> int:
     """Add message to session and get response."""
     if not session_id or not message_content:
         print("Error: session_id and message_content are required")
@@ -116,6 +116,8 @@ def build_parser() -> argparse.ArgumentParser:
     
     # Session create command
     create_parser = subparsers.add_parser("session_create", help="Create a new session")
+    create_parser.add_argument("--sender_id", required=False, help="Sender ID (optional)")
+    create_parser.add_argument("--receiver_id", required=False, help="Receiver ID (optional)")
     
     # Session delete command
     delete_parser = subparsers.add_parser("session_delete", help="Delete a session")
@@ -144,7 +146,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     if command == "help":
         sys.exit(handle_help())
     elif command == "session_create":
-        sys.exit(handle_session_create())
+        sys.exit(handle_session_create(args.sender_id, args.receiver_id))
     elif command == "session_delete":
         sys.exit(handle_session_delete(args.session_id))
     elif command == "session_edit":

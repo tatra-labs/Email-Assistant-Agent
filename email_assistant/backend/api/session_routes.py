@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 
 from ..models.session_models import (
+    SessionCreateRequest,
     SessionCreateResponse,
     SessionDeleteRequest,
     SessionDeleteResponse,
@@ -16,10 +17,10 @@ router = APIRouter(prefix="/session", tags=["sessions"])
 
 
 @router.post("/create", response_model=SessionCreateResponse)
-async def session_create(session_service: SessionService = Depends()):
+async def session_create(request: SessionCreateRequest, session_service: SessionService = Depends()):
     """Create a new session and return session ID."""
     try:
-        session_id = await session_service.create_session()
+        session_id = await session_service.create_session(request.sender_id, request.receiver_id)
         return SessionCreateResponse(
             success=True,
             session_id=session_id,

@@ -4,13 +4,13 @@ import httpx
 from typing import List, Dict, Any, Optional
 import json
 
-from .base import BaseLLMBackend
+from .base import BaseEmailAssistantBackend
 
 
-class FastAPIBackend(BaseLLMBackend):
+class FastAPIBackend(BaseEmailAssistantBackend):
     """FastAPI backend that connects to the LangGraph engine via HTTP."""
     
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str):
         self.base_url = base_url.rstrip('/')
         self.client = httpx.AsyncClient(timeout=30.0)
     
@@ -37,11 +37,14 @@ class FastAPIBackend(BaseLLMBackend):
         except httpx.RequestError as e:
             raise Exception(f"Request failed: {e}")
     
-    def session_create(self) -> str:
+    def session_create(self, sender_id, receiver_id) -> str:
         """Create a new session via FastAPI."""
         import asyncio
         try:
-            result = asyncio.run(self._make_request("POST", "/session/create"))
+            result = asyncio.run(self._make_request("POST", "/session/create", {
+                "sender_id": sender_id,
+                "receiver_id": receiver_id
+            }))
             return result["session_id"]
         except Exception as e:
             raise Exception(f"Failed to create session: {e}")

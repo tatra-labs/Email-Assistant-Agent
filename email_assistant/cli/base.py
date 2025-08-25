@@ -3,12 +3,8 @@ from __future__ import annotations
 from typing import List, Dict, Any, Protocol
 
 
-class BaseLLMBackend(Protocol):
-	"""Protocol for LLM backends. Implementations should be stateless.
-
-	Two primary operations are required:
-	- chat_completion: generate an assistant reply from a chat history
-	- get_structured_output: extract structured data matching a schema
+class BaseEmailAssistantBackend(Protocol):
+	"""Protocol for Email Assitant backends. Implementations should be stateless.
 	
 	Session management operations:
 	- session_create: create a new session and return session ID
@@ -16,7 +12,7 @@ class BaseLLMBackend(Protocol):
 	- session_edit: edit a message in a session
 	- session_chat: add a message to a session and get response
 	"""
-	
+
 	def session_create(self) -> str:
 		"""Create a new session and return session ID."""
 		...

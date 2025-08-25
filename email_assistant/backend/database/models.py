@@ -7,81 +7,93 @@ import uuid
 
 from .config import Base
 
+#########################
 
-class Person(Base):
-    """Person model for message sender and receiver."""
-    __tablename__ = "persons"
-    
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    full_name = Column(String(255), nullable=False)
-    email_address = Column(String(255), nullable=True)
-    phone_number = Column(String(50), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
-    # Relationships
-    sent_messages = relationship("Message", foreign_keys="Message.sender_id", back_populates="sender")
-    received_messages = relationship("Message", foreign_keys="Message.receiver_id", back_populates="receiver")
-    
-    def __repr__(self):
-        return f"<Person(id={self.id}, name='{self.full_name}', email='{self.email_address}')>"
+##  PostgreSQL Models  ##
 
+#########################
 
-class Session(Base):
-    """Session model containing multiple messages."""
-    __tablename__ = "sessions"
+# class Person(Base):
+#     """Person model for message sender and receiver."""
+#     __tablename__ = "persons"
     
-    session_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    summary = Column(Text, nullable=True)
-    sender_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
-    receiver_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+#     full_name = Column(String(255), nullable=False)
+#     email_address = Column(String(255), nullable=True)
+#     phone_number = Column(String(50), nullable=True)
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relationships
-    messages = relationship("Message", back_populates="session", cascade="all, delete-orphan")
-    sender = relationship("Person", foreign_keys=[sender_id], backref="sessions_sent")
-    receiver = relationship("Person", foreign_keys=[receiver_id], backref="sessions_received")
+#     # Relationships
+#     sessions_sent = relationship("Session", foreign_keys="Session.sender_id", back_populates="sender")
+#     sessions_received = relationship("Session", foreign_keys="Session.receiver_id", back_populates="receiver")
     
-    def __repr__(self):
-        return f"<Session(id={self.session_id}, sender={self.sender_id}, receiver={self.receiver_id})>"
+#     def __repr__(self):
+#         return f"<Person(id={self.id}, name='{self.full_name}', email='{self.email_address}')>"
 
 
-class Message(Base):
-    """Message model within a session."""
-    __tablename__ = "messages"
+# class Session(Base):
+#     """Session model containing multiple messages."""
+#     __tablename__ = "sessions"
     
-    message_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey("sessions.session_id"), nullable=False)
-    message_text = Column(Text, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+#     session_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+#     summary = Column(Text, nullable=True)
+#     sender_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
+#     receiver_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relationships
-    session = relationship("Session", back_populates="messages")
-    files = relationship("MessageFile", back_populates="message", cascade="all, delete-orphan")
+#     # Relationships
+#     messages = relationship("Message", back_populates="session", cascade="all, delete-orphan")
+#     sender = relationship("Person", foreign_keys=[sender_id], back_populates="sessions_sent")
+#     receiver = relationship("Person", foreign_keys=[receiver_id], back_populates="sessions_received")
     
-    def __repr__(self):
-        return f"<Message(id={self.message_id}, text='{self.message_text[:50]}...')>"
+#     def __repr__(self):
+#         return f"<Session(id={self.session_id}, sender={self.sender_id}, receiver={self.receiver_id})>"
 
 
-class MessageFile(Base):
-    """File attachments for messages."""
-    __tablename__ = "message_files"
+# class Message(Base):
+#     """Message model within a session."""
+#     __tablename__ = "messages"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    message_id = Column(UUID(as_uuid=True), ForeignKey("messages.message_id"), nullable=False)
-    file_path = Column(String(500), nullable=False)
-    file_content = Column(Text, nullable=True)  # Parsed text content
-    file_type = Column(String(100), nullable=True)  # e.g., "pdf", "docx", "txt"
-    file_size = Column(String(50), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+#     message_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+#     session_id = Column(UUID(as_uuid=True), ForeignKey("sessions.session_id"), nullable=False)
+#     message_text = Column(Text, nullable=False)
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # Relationships
-    message = relationship("Message", back_populates="files")
+#     # Relationships
+#     session = relationship("Session", back_populates="messages")
+#     files = relationship("MessageFile", back_populates="message", cascade="all, delete-orphan")
     
-    def __repr__(self):
-        return f"<MessageFile(id={self.id}, path='{self.file_path}', type='{self.file_type}')>"
+#     def __repr__(self):
+#         return f"<Message(id={self.message_id}, text='{self.message_text[:50]}...')>"
+
+
+# class MessageFile(Base):
+#     """File attachments for messages."""
+#     __tablename__ = "message_files"
+    
+#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+#     message_id = Column(UUID(as_uuid=True), ForeignKey("messages.message_id"), nullable=False)
+#     file_path = Column(String(500), nullable=False)
+#     file_content = Column(Text, nullable=True)  # Parsed text content
+#     file_type = Column(String(100), nullable=True)  # e.g., "pdf", "docx", "txt"
+#     file_size = Column(String(50), nullable=True)
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+#     # Relationships
+#     message = relationship("Message", back_populates="files")
+    
+#     def __repr__(self):
+#         return f"<MessageFile(id={self.id}, path='{self.file_path}', type='{self.file_type}')>"
+
+
+#####################
+
+##  SQLite Models  ##
+
+#####################
 
 
 # For SQLite compatibility (since SQLite doesn't support UUID natively)
@@ -107,7 +119,7 @@ class SQLitePerson(Base):
     """Person model for SQLite compatibility."""
     __tablename__ = "persons"
     
-    id = Column(SQLiteUUID(), primary_key=True, default=uuid.uuid4)
+    id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
     full_name = Column(String(255), nullable=False)
     email_address = Column(String(255), nullable=True)
     phone_number = Column(String(50), nullable=True)
@@ -119,7 +131,7 @@ class SQLiteSession(Base):
     """Session model for SQLite compatibility."""
     __tablename__ = "sessions"
     
-    session_id = Column(SQLiteUUID(), primary_key=True, default=uuid.uuid4)
+    session_id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
     summary = Column(Text, nullable=True)
     sender_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     receiver_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
@@ -131,7 +143,7 @@ class SQLiteMessage(Base):
     """Message model for SQLite compatibility."""
     __tablename__ = "messages"
     
-    message_id = Column(SQLiteUUID(), primary_key=True, default=uuid.uuid4)
+    message_id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
     session_id = Column(SQLiteUUID(), ForeignKey("sessions.session_id"), nullable=False)
     message_text = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -142,7 +154,7 @@ class SQLiteMessageFile(Base):
     """File attachments for SQLite compatibility."""
     __tablename__ = "message_files"
     
-    id = Column(SQLiteUUID(), primary_key=True, default=uuid.uuid4)
+    id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
     message_id = Column(SQLiteUUID(), ForeignKey("messages.message_id"), nullable=False)
     file_path = Column(String(500), nullable=False)
     file_content = Column(Text, nullable=True)

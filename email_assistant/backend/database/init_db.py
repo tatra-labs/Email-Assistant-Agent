@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from .config import engine, SessionLocal
-from .models import Base, Person, Session as DBSession, Message, MessageFile
+from .models import Base, SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteMessageFile as MessageFile
 import uuid
 
 
@@ -22,51 +22,50 @@ def create_sample_data():
         
         # Create sample persons
         person1 = Person(
-            id=uuid.uuid4(),
             full_name="John Doe",
             email_address="john.doe@example.com",
-            phone_number="+1-555-0123"
+            phone_number="+1234567890"
         )
         
         person2 = Person(
-            id=uuid.uuid4(),
             full_name="Jane Smith",
             email_address="jane.smith@example.com",
-            phone_number="+1-555-0456"
+            phone_number="+1234567891"
         )
         
         db.add(person1)
         db.add(person2)
         db.commit()
+
+        print("Person added successfully...")
         
         # Create a sample session
         session = DBSession(
-            session_id=uuid.uuid4(),
+            sender_id=str(person1.id),
+            receiver_id=str(person2.id),
             summary="Initial project discussion and requirements gathering"
         )
         db.add(session)
         db.commit()
+
+        print("Session added successfully...")
         
         # Create sample messages
         message1 = Message(
-            message_id=uuid.uuid4(),
-            session_id=session.session_id,
-            sender_id=person1.id,
-            receiver_id=person2.id,
+            session_id=str(session.session_id),
             message_text="Hi Jane, I'd like to discuss the new project requirements. Can we schedule a meeting?"
         )
         
         message2 = Message(
-            message_id=uuid.uuid4(),
-            session_id=session.session_id,
-            sender_id=person2.id,
-            receiver_id=person1.id,
+            session_id=str(session.session_id),
             message_text="Hi John, absolutely! I'm available tomorrow at 2 PM. Does that work for you?"
         )
         
         db.add(message1)
         db.add(message2)
         db.commit()
+
+        print("Message added successfully...")
         
         print("Sample data created successfully!")
         
