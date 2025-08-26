@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 import uuid
 
-from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteMessageFile as MessageFile
+from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message
 
 
 class PersonRepository:
@@ -106,12 +106,17 @@ class MessageRepository:
     def __init__(self, db: Session):
         self.db = db
     
-    def create(self, session_id: uuid.UUID, message_text: str) -> Message:
+    def create(self, session_id: str, sender_id: str, receiver_id: str, message_text: str, message_file: Optional[str]) -> Message:
         """Create a new message."""
+        file_text = ""
         message = Message(
-            message_id=uuid.uuid4(),
+            message_id=str(uuid.uuid4()),
             session_id=session_id,
-            message_text=message_text
+            sender_id=sender_id,
+            receiver_id=receiver_id,
+            message_text=message_text,
+            message_file=message_file,
+            file_text=file_text
         )
         self.db.add(message)
         self.db.commit()
@@ -143,52 +148,3 @@ class MessageRepository:
             self.db.commit()
             return True
         return False
-
-
-class MessageFileRepository:
-    """Repository for MessageFile operations."""
-    
-    def __init__(self, db: Session):
-        self.db = db
-    
-    def create(self, message_id: uuid.UUID, file_path: str, file_content: Optional[str] = None,
-               file_type: Optional[str] = None, file_size: Optional[str] = None) -> MessageFile:
-        """Create a new message file."""
-        message_file = MessageFile(
-            id=uuid.uuid4(),
-            message_id=message_id,
-            file_path=file_path,
-            file_content=file_content,
-            file_type=file_type,
-            file_size=file_size
-        )
-        self.db.add(message_file)
-        self.db.commit()
-        self.db.refresh(message_file)
-        return message_file
-    
-    def get_by_id(self, file_id: uuid.UUID) -> Optional[MessageFile]:
-        """Get message file by ID."""
-        return self.db.query(MessageFile).filter(MessageFile.id == file_id).first()
-    
-    def get_by_message(self, message_id: uuid.UUID) -> List[MessageFile]:
-        """Get all files for a message."""
-        return self.db.query(MessageFile).filter(MessageFile.message_id == message_id).all()
-    
-    def update_content(self, file_id: uuid.UUID, file_content: str) -> Optional[MessageFile]:
-        """Update file content."""
-        message_file = self.get_by_id(file_id)
-        if message_file:
-            self.db.query(MessageFile).filter(MessageFile.id == file_id).update({"file_content": file_content})
-            self.db.commit()
-            return self.get_by_id(file_id)
-        return None
-    
-    def delete(self, file_id: uuid.UUID) -> bool:
-        """Delete a message file."""
-        message_file = self.get_by_id(file_id)
-        if message_file:
-            self.db.delete(message_file)
-            self.db.commit()
-            return True
-        return False 

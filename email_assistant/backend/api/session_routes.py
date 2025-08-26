@@ -77,7 +77,7 @@ async def session_edit(request: SessionEditRequest, session_service: SessionServ
 async def session_chat(request: SessionChatRequest, session_service: SessionService = Depends()):
     """Add a message to a session and get AI response."""
     try:
-        response = await session_service.chat_message(request.session_id, request.content)
+        response = await session_service.add_message(request.session_id, request.sender_id, request.receiver_id, request.text, request.file_path)
         return SessionChatResponse(
             success=True,
             response=response,

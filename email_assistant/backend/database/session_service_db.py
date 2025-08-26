@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 import uuid
 
 from .config import get_db
-from .repositories import SessionRepository, MessageRepository, PersonRepository, MessageFileRepository
-from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteMessageFile as MessageFile
+from .repositories import SessionRepository, MessageRepository, PersonRepository
+from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message
 
 
 class DatabaseSessionService:
@@ -50,41 +50,22 @@ class DatabaseSessionService:
         except ValueError:
             return False
     
-    async def chat_message(self, session_id: str, content: str) -> str:
+    async def add_message(self, session_id: str, sender_id: str, receiver_id: str, content: str, file_path: Optional[str]) -> str:
         """Add a chat message to the database and return AI response."""
         try:
             session_uuid = uuid.UUID(session_id)
             db = self._get_db()
             
-            # Get or create default sender/receiver for now
-            # In a real implementation, this would come from user context
-            person_repo = PersonRepository(db)
-            sender = person_repo.get_by_email("ai.assistant@example.com")
-            if not sender:
-                sender = person_repo.create("AI Assistant", "ai.assistant@example.com")
-            
-            receiver = person_repo.get_by_email("user@example.com")
-            if not receiver:
-                receiver = person_repo.create("User", "user@example.com")
-            
-            # Create the message
             message_repo = MessageRepository(db)
             message = message_repo.create(
-                session_id=session_uuid,
-                message_text=content
+                session_id=str(session_uuid),
+                sender_id=sender_id,
+                receiver_id=receiver_id,
+                message_text=content,
+                message_file=file_path
             )
-            
-            # For now, return a mock AI response
-            # In the future, this would call the actual AI engine
-            ai_response = f"Mock AI response to: {content}"
-            
-            # Create AI response message
-            ai_message = message_repo.create(
-                session_id=session_uuid,
-                message_text=ai_response
-            )
-            
-            return ai_response
+
+            return str(message.message_id)
             
         except ValueError:
             return "Error: Invalid session ID"
@@ -134,20 +115,6 @@ class DatabaseSessionService:
                     "created_at": msg.created_at.isoformat() if msg.created_at else None, # type: ignore
                     "files": []
                 }
-                
-                # Add file information
-                file_repo = MessageFileRepository(db)
-                files = file_repo.get_by_message(msg.message_id) # type: ignore
-                for file in files:
-                    message_data["files"].append({
-                        "id": str(file.id),
-                        "path": file.file_path,
-                        "type": file.file_type,
-                        "size": file.file_size,
-                        "content": file.file_content
-                    })
-                
-                session_info["messages"].append(message_data)
             
             return session_info
             
@@ -156,27 +123,6 @@ class DatabaseSessionService:
         except Exception as e:
             print(f"Error getting session info: {e}")
             return None
-    
-    def add_file_to_message(self, message_id: str, file_path: str, file_content: Optional[str] = None,
-                           file_type: Optional[str] = None, file_size: Optional[str] = None) -> bool:
-        """Add a file attachment to a message."""
-        try:
-            message_uuid = uuid.UUID(message_id)
-            db = self._get_db()
-            file_repo = MessageFileRepository(db)
-            file_repo.create(
-                message_id=message_uuid,
-                file_path=file_path,
-                file_content=file_content,
-                file_type=file_type,
-                file_size=file_size
-            )
-            return True
-        except ValueError:
-            return False
-        except Exception as e:
-            print(f"Error adding file: {e}")
-            return False
     
     def close(self):
         """Close the database connection."""

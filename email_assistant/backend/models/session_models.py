@@ -43,7 +43,10 @@ class SessionEditResponse(BaseModel):
 class SessionChatRequest(BaseModel):
     """Request model for session chat."""
     session_id: str = Field(..., description="The session ID")
-    content: str = Field(..., description="The message content to send")
+    sender_id: str = Field(..., description="The sender's user ID")
+    receiver_id: str = Field(..., description="The receiver's user ID")
+    text: str = Field(..., description="The message content to send")
+    file_path: Optional[str] = Field(None, description="Optional list of file paths to attach")
 
 
 class SessionChatResponse(BaseModel):

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from .config import engine, SessionLocal
-from .models import Base, SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteMessageFile as MessageFile
+from .models import Base, SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message
 import uuid
 
 
@@ -53,12 +53,20 @@ def create_sample_data():
         # Create sample messages
         message1 = Message(
             session_id=str(session.session_id),
-            message_text="Hi Jane, I'd like to discuss the new project requirements. Can we schedule a meeting?"
+            sender_id=str(person1.id),
+            receiver_id=str(person2.id),
+            message_text="Hi Jane, I'd like to discuss the new project requirements. Can we schedule a meeting?",
+            message_file=None,
+            file_text=None        
         )
         
         message2 = Message(
             session_id=str(session.session_id),
-            message_text="Hi John, absolutely! I'm available tomorrow at 2 PM. Does that work for you?"
+            sender_id=str(person2.id),
+            receiver_id=str(person1.id),
+            message_text="Hi John, absolutely! I'm available tomorrow at 2 PM. Does that work for you?",
+            message_file=None,
+            file_text=None
         )
         
         db.add(message1)

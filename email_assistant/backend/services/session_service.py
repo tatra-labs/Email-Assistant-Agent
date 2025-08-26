@@ -22,5 +22,5 @@ class SessionService:
     async def edit_message(self, session_id: str, element_id: str, content: str) -> bool:
         return self.db_service.edit_message(session_id, element_id, content)
 
-    async def chat_message(self, session_id: str, content: str) -> str:
-        return await self.db_service.chat_message(session_id, content)
+    async def add_message(self, session_id: str, sender_id: str, receiver_id, content: str, file_path: Optional[str]) -> str:
+        return await self.db_service.add_message(session_id, sender_id, receiver_id, content, file_path)

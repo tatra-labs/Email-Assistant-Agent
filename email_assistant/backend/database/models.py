@@ -145,19 +145,10 @@ class SQLiteMessage(Base):
     
     message_id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
     session_id = Column(SQLiteUUID(), ForeignKey("sessions.session_id"), nullable=False)
+    sender_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
+    receiver_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     message_text = Column(Text, nullable=False)
+    message_file = Column(Text, nullable=True) 
+    file_text = Column(Text, nullable=True)  # Parsed file content
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-
-class SQLiteMessageFile(Base):
-    """File attachments for SQLite compatibility."""
-    __tablename__ = "message_files"
-    
-    id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
-    message_id = Column(SQLiteUUID(), ForeignKey("messages.message_id"), nullable=False)
-    file_path = Column(String(500), nullable=False)
-    file_content = Column(Text, nullable=True)
-    file_type = Column(String(100), nullable=True)
-    file_size = Column(String(50), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now()) 
