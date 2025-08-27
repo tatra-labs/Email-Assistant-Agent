@@ -58,7 +58,7 @@ class DatabaseSessionService:
 
             message_repo = MessageRepository(db)
             message = message_repo.create(
-                session_id=str(session_id),
+                session_id=session_id,
                 sender_id=sender_id,
                 receiver_id=receiver_id,
                 message_text=message_text,

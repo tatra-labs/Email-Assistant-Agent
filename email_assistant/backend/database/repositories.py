@@ -5,6 +5,8 @@ import uuid
 
 from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message
 
+from ..engine.utils.pdf_parser import extract_text_from_pdf
+
 
 class PersonRepository:
     """Repository for Person operations."""
@@ -108,7 +110,11 @@ class MessageRepository:
     
     def create(self, session_id: str, sender_id: str, receiver_id: str, message_text: str, message_file: Optional[str]) -> Message:
         """Create a new message."""
-        file_text = "TODO: pdf parser"
+        try:
+            file_text = extract_text_from_pdf(message_file)
+        except:
+            file_text = "Failed to parse this document" 
+
         message = Message(
             message_id=str(uuid.uuid4()),
             session_id=session_id,
