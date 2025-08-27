@@ -73,13 +73,27 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         except Exception as e:
             raise Exception(f"Failed to edit message: {e}")
     
-    def session_chat(self, session_id: str, message_content: str) -> str:
+    def session_chat(self, session_id: str, sender_id: str, receiver_id: str, message_text: str, file_path: Optional[str]) -> str:
         """Add message to session and get response via FastAPI."""
         import asyncio
         try:
             result = asyncio.run(self._make_request("POST", "/session/chat", {
                 "session_id": session_id,
-                "content": message_content
+                "sender_id": sender_id,
+                "receiver_id": receiver_id,
+                "message_text": message_text,
+                "file_path": file_path
+            }))
+            return result["response"]
+        except Exception as e:
+            raise Exception(f"Failed to process message: {e}")
+        
+    def session_fetch(self, session_id: str) -> str:
+        """Add message to session and get response via FastAPI."""
+        import asyncio
+        try:
+            result = asyncio.run(self._make_request("POST", "/session/fetch", {
+                "session_id": session_id
             }))
             return result["response"]
         except Exception as e:
