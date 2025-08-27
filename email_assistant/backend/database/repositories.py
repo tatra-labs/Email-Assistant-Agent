@@ -73,7 +73,7 @@ class SessionRepository:
         self.db.refresh(session)
         return session
     
-    def get_by_id(self, session_id: uuid.UUID) -> Optional[DBSession]:
+    def get_by_id(self, session_id: str) -> Optional[DBSession]:
         """Get session by ID with messages and files."""
         return self.db.query(DBSession).filter(DBSession.session_id == session_id).first()
     
@@ -81,7 +81,7 @@ class SessionRepository:
         """Get all sessions."""
         return self.db.query(DBSession).all()
     
-    def update_summary(self, session_id: uuid.UUID, summary: str) -> Optional[DBSession]:
+    def update_summary(self, session_id: str, summary: str) -> Optional[DBSession]:
         """Update session summary."""
         session = self.get_by_id(session_id)
         if session:
@@ -90,7 +90,7 @@ class SessionRepository:
             return self.get_by_id(session_id)
         return None
     
-    def delete(self, session_id: uuid.UUID) -> bool:
+    def delete(self, session_id: str) -> bool:
         """Delete a session and all its messages."""
         session = self.get_by_id(session_id)
         if session:
@@ -108,7 +108,7 @@ class MessageRepository:
     
     def create(self, session_id: str, sender_id: str, receiver_id: str, message_text: str, message_file: Optional[str]) -> Message:
         """Create a new message."""
-        file_text = ""
+        file_text = "TODO: pdf parser"
         message = Message(
             message_id=str(uuid.uuid4()),
             session_id=session_id,
@@ -123,15 +123,15 @@ class MessageRepository:
         self.db.refresh(message)
         return message
     
-    def get_by_id(self, message_id: uuid.UUID) -> Optional[Message]:
+    def get_by_id(self, message_id: str) -> Optional[Message]:
         """Get message by ID with files."""
         return self.db.query(Message).filter(Message.message_id == message_id).first()
     
-    def get_by_session(self, session_id: uuid.UUID) -> List[Message]:
+    def get_by_session(self, session_id: str) -> List[Message]:
         """Get all messages in a session."""
         return self.db.query(Message).filter(Message.session_id == session_id).order_by(Message.created_at).all()
     
-    def update_text(self, message_id: uuid.UUID, message_text: str) -> Optional[Message]:
+    def update_text(self, message_id: str, message_text: str) -> Optional[Message]:
         """Update message text."""
         message = self.get_by_id(message_id)
         if message:
@@ -140,7 +140,7 @@ class MessageRepository:
             return self.get_by_id(message_id)
         return None
     
-    def delete(self, message_id: uuid.UUID) -> bool:
+    def delete(self, message_id: str) -> bool:
         """Delete a message and its files."""
         message = self.get_by_id(message_id)
         if message:

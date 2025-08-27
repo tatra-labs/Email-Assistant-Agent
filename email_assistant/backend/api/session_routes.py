@@ -9,7 +9,9 @@ from ..models.session_models import (
     SessionEditRequest,
     SessionEditResponse,
     SessionChatRequest,
-    SessionChatResponse
+    SessionChatResponse,
+    SessionFetchRequest,
+    SessionFetchResponse
 )
 from ..services.session_service import SessionService
 
@@ -75,13 +77,40 @@ async def session_edit(request: SessionEditRequest, session_service: SessionServ
 
 @router.post("/chat", response_model=SessionChatResponse)
 async def session_chat(request: SessionChatRequest, session_service: SessionService = Depends()):
-    """Add a message to a session and get AI response."""
+    """Add a message to a session."""
     try:
-        response = await session_service.add_message(request.session_id, request.sender_id, request.receiver_id, request.text, request.file_path)
+        response = await session_service.add_message(request.session_id, request.sender_id, request.receiver_id, request.message_text, request.file_path)
+        if response.startswith("Error"):
+            return SessionChatResponse(
+                success=False,
+                response=response,
+                message="Message not added!"
+            )
         return SessionChatResponse(
             success=True,
             response=response,
-            message="Message processed successfully"
+            message="Message added successfully"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process message: {str(e)}") 
+    
+
+@router.post("/fetch", response_model=SessionFetchResponse)
+async def session_fetch(request: SessionFetchRequest, session_service: SessionService = Depends()):
+    """Fetch all the messages of a session."""
+    try:
+        response = session_service.fetch_session(request.session_id)
+        if response:
+            return SessionFetchResponse(
+                success=True,
+                response=response,
+                message="Session detail fetched successfully!"
+            )
+        else:
+            return SessionFetchResponse(
+                success=False,
+                response=response,
+                message="Session detail fetching failed!"
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch session detail: {str(e)}") 
