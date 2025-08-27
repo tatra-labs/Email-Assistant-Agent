@@ -53,12 +53,11 @@ class DatabaseSessionService:
     async def add_message(self, session_id: str, sender_id: str, receiver_id: str, content: str, file_path: Optional[str]) -> str:
         """Add a chat message to the database and return AI response."""
         try:
-            session_uuid = uuid.UUID(session_id)
             db = self._get_db()
             
             message_repo = MessageRepository(db)
             message = message_repo.create(
-                session_id=str(session_uuid),
+                session_id=session_id,
                 sender_id=sender_id,
                 receiver_id=receiver_id,
                 message_text=content,
