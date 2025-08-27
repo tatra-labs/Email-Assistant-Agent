@@ -25,15 +25,15 @@ Email-Assistant-Agent/
 │   │   │   │   └── mock_llm.py
 │   │   │   ├── langgraph/   # LangGraph workflows
 │   │   │   │   └── email_workflow.py
-│   │   │   └── agents/      # AI agents
-│   │   │       └── email_assistant_agent.py
+│   │   │   ├── agents/      # AI agents
+│   │   │   │   └── email_assistant_agent.py
+│   │   │   └── utils/       # Utilities 
+│   │   │       └── pdf_parser.py 
 │   │   └── main.py          # FastAPI application
 │   ├── cli/                 # CLI interface
 │   │   ├── cli.py           # Main CLI logic
 │   │   ├── backends.py      # Backend factory
 │   │   └── fastapi_backend.py # FastAPI HTTP client
-│   ├── core/                # Shared core functionality
-│   │   └── session_manager.py # Core session manager
 │   ├── __init__.py          # Package initializer
 │   └── __main__.py          # Module entry point
 ├── run_server.py            # Server startup script

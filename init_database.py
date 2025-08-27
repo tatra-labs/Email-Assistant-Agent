@@ -9,8 +9,6 @@ import os
 # Add the project root to the Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from email_assistant.backend.database.config import engine
-from email_assistant.backend.database.models import Base
 from email_assistant.backend.database.init_db import init_db, create_sample_data
 
 
