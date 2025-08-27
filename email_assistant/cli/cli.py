@@ -85,21 +85,38 @@ def handle_session_edit(session_id: str, message_id: str, message_content: str) 
         return 1
 
 
-def handle_session_chat(session_id: str, message_content: str) -> int:
+def handle_session_chat(session_id: str, sender_id: str, receiver_id: str, message_text: str, file_path: Optional[str]) -> int:
     """Add message to session and get response."""
-    if not session_id or not message_content:
-        print("Error: session_id and message_content are required")
+    if not session_id or not sender_id or not receiver_id or not message_text:
+        print("Error: session_id, sender_id, receiver_id and message_text are required")
         return 1
     
     try:
         backend = get_backend()
-        response = backend.session_chat(session_id, message_content)
+        response = backend.session_chat(session_id, sender_id, receiver_id, message_text, file_path)
         print(f"Message added to session {session_id} successfully")
         print(f"Response: {response}")
         return 0
     except Exception as e:
         print(f"Error processing message in session {session_id}: {e}")
         return 1
+
+
+def handle_session_fetch(session_id: str) -> int:
+    """Fetch all the details of session""" 
+    if not session_id:
+        print("Error: session_id is required") 
+        return 1 
+    
+    try:
+        backend = get_backend()
+        response = backend.session_fetch(session_id) 
+        print(f"Details of session {session_id} are fetched successfully") 
+        print(f"Response: {response}") 
+        return 0 
+    except Exception as e:
+        print(f"Error fetching of session {session_id}: {e}") 
+        return 1 
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -132,7 +149,14 @@ def build_parser() -> argparse.ArgumentParser:
     # Session chat command
     chat_parser = subparsers.add_parser("session_chat", help="Add message to session and get response")
     chat_parser.add_argument("--session_id", required=True, help="Session ID")
-    chat_parser.add_argument("--content", required=True, help="Message content")
+    chat_parser.add_argument("--sender_id", required=True, help="User ID of sender") 
+    chat_parser.add_argument("--receiver_id", required=True, help="User ID of receiver") 
+    chat_parser.add_argument("--message_text", required=True, help="Text content of message")
+    chat_parser.add_argument("--file_path", required=False, help="Path of attached file")
+
+    # Session fetch command
+    fetch_parser = subparsers.add_parser("session_fetch", help="Fetch all the details of session") 
+    fetch_parser.add_argument("--session_id", required=True, help="Session ID") 
     
     return parser
 
@@ -152,7 +176,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     elif command == "session_edit":
         sys.exit(handle_session_edit(args.session_id, args.element_id, args.content))
     elif command == "session_chat":
-        sys.exit(handle_session_chat(args.session_id, args.content))
+        sys.exit(handle_session_chat(args.session_id, args.sender_id, args.receiver_id, args.message_text, args.file_path))
+    elif command == "session_fetch":
+        sys.exit(handle_session_fetch(args.session_id))
     else:
         print(f"Unknown command: {command}")
         print("Use 'help' command to see available commands")

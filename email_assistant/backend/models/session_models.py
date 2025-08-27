@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Dict, Any
 
 
 class SessionCreateRequest(BaseModel):
@@ -45,12 +45,24 @@ class SessionChatRequest(BaseModel):
     session_id: str = Field(..., description="The session ID")
     sender_id: str = Field(..., description="The sender's user ID")
     receiver_id: str = Field(..., description="The receiver's user ID")
-    text: str = Field(..., description="The message content to send")
+    message_text: str = Field(..., description="The message text to send")
     file_path: Optional[str] = Field(None, description="Optional list of file paths to attach")
 
 
 class SessionChatResponse(BaseModel):
     """Response model for session chat."""
     success: bool = Field(..., description="Whether the operation was successful")
-    response: str = Field(..., description="The AI response")
+    response: str = Field(..., description="Added message ID")
+    message: str = Field(..., description="Status message") 
+
+
+class SessionFetchRequest(BaseModel):
+    """Request model for session fetch."""
+    session_id: str = Field(..., description="The session ID")
+    
+    
+class SessionFetchResponse(BaseModel):
+    """Response model for session fetch."""
+    success: bool = Field(..., description="Whether the operation was successful")
+    response: Optional[Dict[str, Any]] = Field(..., description="Result message")
     message: str = Field(..., description="Status message") 

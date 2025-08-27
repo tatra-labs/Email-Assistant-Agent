@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any, List
 
 
 import os
@@ -21,5 +21,8 @@ class SessionService:
     async def edit_message(self, session_id: str, element_id: str, content: str) -> bool:
         return self.db_service.edit_message(session_id, element_id, content)
 
-    async def add_message(self, session_id: str, sender_id: str, receiver_id, content: str, file_path: Optional[str]) -> str:
-        return await self.db_service.add_message(session_id, sender_id, receiver_id, content, file_path)
+    async def add_message(self, session_id: str, sender_id: str, receiver_id, message_text: str, file_path: Optional[str]) -> str:
+        return await self.db_service.add_message(session_id, sender_id, receiver_id, message_text, file_path)
+    
+    def fetch_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+        return self.db_service.get_session_info(session_id)
