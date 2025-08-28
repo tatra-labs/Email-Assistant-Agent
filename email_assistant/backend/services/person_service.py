@@ -9,3 +9,7 @@ class PersonService:
     async def create_person(self, name: str, email: str, phone_number: str) -> str:
         """Create a new person using the database service."""
         return self.db_service.create_person(name, email, phone_number)
+    
+    async def seek_person(self, email: str):
+        """Seek a person by email using the database service."""
+        return self.db_service.seek_person(email)
