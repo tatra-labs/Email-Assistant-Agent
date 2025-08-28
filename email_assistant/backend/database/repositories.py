@@ -27,7 +27,7 @@ class PersonRepository:
         self.db.refresh(person)
         return person
     
-    def get_by_id(self, person_id: uuid.UUID) -> Optional[Person]:
+    def get_by_id(self, person_id: str) -> Optional[Person]:
         """Get person by ID."""
         return self.db.query(Person).filter(Person.id == person_id).first()
     
@@ -35,7 +35,7 @@ class PersonRepository:
         """Get person by email address."""
         return self.db.query(Person).filter(Person.email_address == email_address).first()
     
-    def update(self, person_id: uuid.UUID, **kwargs) -> Optional[Person]:
+    def update(self, person_id: str, **kwargs) -> Optional[Person]:
         """Update person information."""
         person = self.get_by_id(person_id)
         if person:
@@ -46,7 +46,7 @@ class PersonRepository:
             self.db.refresh(person)
         return person
     
-    def delete(self, person_id: uuid.UUID) -> bool:
+    def delete(self, person_id: str) -> bool:
         """Delete a person."""
         person = self.get_by_id(person_id)
         if person:
@@ -162,11 +162,11 @@ class AISessionRepository:
     def __init__(self, db: Session):
         self.db = db
     
-    def create(self, user_id: str) -> AISession:
+    def create(self, esession_id: str) -> AISession:
         """Create a new session."""
         session = AISession(
             session_id=str(uuid.uuid4()),
-            user_id=user_id,
+            esession_id=esession_id,
         )
         self.db.add(session)
         self.db.commit()

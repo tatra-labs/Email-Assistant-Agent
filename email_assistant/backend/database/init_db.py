@@ -76,7 +76,7 @@ def create_sample_data():
         print("Message added successfully...")
 
         ai_session = AISession(
-            user_id=str(person1.id),
+            esession_id=str(session.session_id)
         )
 
         db.add(ai_session)

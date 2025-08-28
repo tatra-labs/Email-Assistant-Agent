@@ -27,7 +27,19 @@ class DatabasePersonService:
         except Exception as e:
             raise e
         
-    def seek_person(self, email: str):
+    def seek_person_by_id(self, id: str):
+        """Seek a person by id in the database."""
+        try:
+            db = self._get_db()
+            person_repo = PersonRepository(db)
+            person = person_repo.get_by_id(id)
+            if person is None:
+                raise ValueError("Person not found")
+            return person
+        except Exception as e:
+            raise e
+        
+    def seek_person_by_email(self, email: str):
         """Seek a person by email in the database."""
         try:
             db = self._get_db()

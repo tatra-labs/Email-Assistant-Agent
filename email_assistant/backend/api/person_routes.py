@@ -31,7 +31,7 @@ async def person_create(request: PersonCreateRequest, person_service: PersonServ
 async def get_by_id(request: PersonSeekByIDRequest, person_service: PersonService = Depends()):
     """Return person detail by id."""
     try:
-        response = await person_service.seek_person(request.id)
+        response = await person_service.seek_person_by_id(request.id)
         return PersonSeekByIDResponse(
             success=True,
             person_id=str(response.id),
@@ -48,7 +48,7 @@ async def get_by_id(request: PersonSeekByIDRequest, person_service: PersonServic
 async def get_by_email(request: PersonSeekByEmailRequest, person_service: PersonService = Depends()):
     """Return person detail by email address."""
     try:
-        response = await person_service.seek_person(request.email)
+        response = await person_service.seek_person_by_email(request.email)
         return PersonSeekByEmailResponse(
             success=True,
             person_id=str(response.id),
