@@ -3,8 +3,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from ..models.person_models import (
     PersonCreateRequest,
     PersonCreateResponse,
-    PersonSeekRequest,
-    PersonSeekResponse,
+    PersonSeekByEmailRequest,
+    PersonSeekByEmailResponse,
+    PersonSeekByIDRequest,
+    PersonSeekByIDResponse,
 )
 from ..services.person_service import PersonService
 
@@ -25,14 +27,32 @@ async def person_create(request: PersonCreateRequest, person_service: PersonServ
         raise HTTPException(status_code=500, detail=f"Failed to create person: {str(e)}")
     
 
-@router.post("/seek", response_model=PersonSeekResponse)
-async def get_by_email(request: PersonSeekRequest, person_service: PersonService = Depends()):
-    """Create a new person and return person detail."""
+@router.post("/seekbyid", response_model=PersonSeekByIDResponse)
+async def get_by_id(request: PersonSeekByIDRequest, person_service: PersonService = Depends()):
+    """Return person detail by id."""
     try:
-        response = await person_service.seek_person(request.email)
-        return PersonSeekResponse(
+        response = await person_service.seek_person(request.id)
+        return PersonSeekByIDResponse(
             success=True,
             person_id=str(response.id),
+            email=str(response.email_address),
+            full_name=str(response.full_name),
+            phone_number=str(response.phone_number),
+            message="Person sought successfully"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create person: {str(e)}")
+    
+
+@router.post("/seekbyemail", response_model=PersonSeekByEmailResponse)
+async def get_by_email(request: PersonSeekByEmailRequest, person_service: PersonService = Depends()):
+    """Return person detail by email address."""
+    try:
+        response = await person_service.seek_person(request.email)
+        return PersonSeekByEmailResponse(
+            success=True,
+            person_id=str(response.id),
+            email=str(response.email_address),
             full_name=str(response.full_name),
             phone_number=str(response.phone_number),
             message="Person sought successfully"

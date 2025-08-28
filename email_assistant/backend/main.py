@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from.api.person_routes import router as person_router
-from .api.session_routes import router as session_router
+from .api.esession_routes import router as session_router
 
 # Initialize FastAPI app
 app = FastAPI(

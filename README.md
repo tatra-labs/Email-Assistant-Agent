@@ -12,8 +12,9 @@ Email-Assistant-Agent/
 │   │   ├── services/        # Business logic services
 │   │   │   └── session_service.py
 │   │   ├── models/          # Data models
-│   │   │   ├── session_models.py
-│   │   │   └── session_state.py
+│   │   │   ├── esession_models.py
+│   │   │   ├── person_models.py
+│   │   │   └── aisession_models.py
 │   │   ├── database/        # Database configuration and models
 │   │   │   ├── config.py    # Database connection
 │   │   │   ├── models.py    # SQLAlchemy models
