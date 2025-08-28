@@ -22,7 +22,7 @@ router = APIRouter(prefix="/session", tags=["sessions"])
 async def session_create(request: SessionCreateRequest, session_service: SessionService = Depends()):
     """Create a new session and return session ID."""
     try:
-        session_id = await session_service.create_session(request.sender_id, request.receiver_id, request.summary)
+        session_id = await session_service.create_session(request.sender_id, request.receiver_id, request.subject)
         return SessionCreateResponse(
             success=True,
             session_id=session_id,

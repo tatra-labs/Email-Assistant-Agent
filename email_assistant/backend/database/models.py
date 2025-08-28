@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Table
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.sql import func
@@ -34,10 +34,10 @@ from .config import Base
 
 # class Session(Base):
 #     """Session model containing multiple messages."""
-#     __tablename__ = "sessions"
+#     __tablename__ = "esessions"
     
 #     session_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-#     summary = Column(Text, nullable=True)
+#     subject = Column(Text, nullable=True)
 #     sender_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
 #     receiver_id = Column(UUID(as_uuid=True), ForeignKey("persons.id"), nullable=False)
 #     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -54,7 +54,7 @@ from .config import Base
 
 # class Message(Base):
 #     """Message model within a session."""
-#     __tablename__ = "messages"
+#     __tablename__ = "emessages"
     
 #     message_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 #     session_id = Column(UUID(as_uuid=True), ForeignKey("sessions.session_id"), nullable=False)
@@ -121,7 +121,7 @@ class SQLitePerson(Base):
     
     id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
     full_name = Column(String(255), nullable=False)
-    email_address = Column(String(255), nullable=True)
+    email_address = Column(String(255), nullable=False, unique=True)
     phone_number = Column(String(50), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -129,10 +129,10 @@ class SQLitePerson(Base):
 
 class SQLiteSession(Base):
     """Session model for SQLite compatibility."""
-    __tablename__ = "sessions"
+    __tablename__ = "esessions"
     
     session_id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
-    summary = Column(Text, nullable=True)
+    subject = Column(Text, nullable=True)
     sender_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     receiver_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -141,15 +141,16 @@ class SQLiteSession(Base):
 
 class SQLiteMessage(Base):
     """Message model for SQLite compatibility."""
-    __tablename__ = "messages"
+    __tablename__ = "emessages"
     
     message_id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
-    session_id = Column(SQLiteUUID(), ForeignKey("sessions.session_id"), nullable=False)
+    session_id = Column(SQLiteUUID(), ForeignKey("esessions.session_id"), nullable=False)
     sender_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     receiver_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
     message_text = Column(Text, nullable=False)
     message_file = Column(Text, nullable=True) 
     file_text = Column(Text, nullable=True)  # Parsed file content
+    is_draft = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

@@ -6,7 +6,7 @@ class SessionCreateRequest(BaseModel):
     """Request model for session deletion."""
     sender_id: str = Field(..., description="User ID of the sender")
     receiver_id: str = Field(..., description="User ID of the receiver")
-    summary: str = Field("", description="Optional session summary")
+    subject: str = Field("", description="Optional session subject")
 
 
 class SessionCreateResponse(BaseModel):

@@ -27,7 +27,7 @@ async def person_create(request: PersonCreateRequest, person_service: PersonServ
 
 @router.post("/seek", response_model=PersonSeekResponse)
 async def get_by_email(request: PersonSeekRequest, person_service: PersonService = Depends()):
-    """Create a new person and return person ID."""
+    """Create a new person and return person detail."""
     try:
         response = await person_service.seek_person(request.email)
         return PersonSeekResponse(

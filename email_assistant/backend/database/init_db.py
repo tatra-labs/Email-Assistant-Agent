@@ -43,7 +43,7 @@ def create_sample_data():
         session = DBSession(
             sender_id=str(person1.id),
             receiver_id=str(person2.id),
-            summary="Initial project discussion and requirements gathering"
+            subject="Initial project discussion and requirements gathering"
         )
         db.add(session)
         db.commit()

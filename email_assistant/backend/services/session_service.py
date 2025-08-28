@@ -11,9 +11,9 @@ class SessionService:
     def __init__(self):
         self.db_service = DatabaseSessionService()
 
-    async def create_session(self, sender_id: str, receiver_id: str, summary: str) -> str:
+    async def create_session(self, sender_id: str, receiver_id: str, subject: str) -> str:
         """Create a new session using the database service."""
-        return self.db_service.create_session(sender_id, receiver_id, summary)
+        return self.db_service.create_session(sender_id, receiver_id, subject)
 
     async def delete_session(self, session_id: str) -> bool:
         return self.db_service.delete_session(session_id)

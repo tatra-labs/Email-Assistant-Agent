@@ -148,7 +148,7 @@ Once the server is running, you can access:
 
 2. **Session** - Email conversation session
    - `session_id`: UUID primary key
-   - `summary`: Session summary text
+   - `subject`: Session subject text
    - `created_at`: Creation timestamp
    - `updated_at`: Last update timestamp
 

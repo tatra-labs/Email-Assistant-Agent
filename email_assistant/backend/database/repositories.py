@@ -62,13 +62,13 @@ class SessionRepository:
     def __init__(self, db: Session):
         self.db = db
     
-    def create(self, sender_id: str, receiver_id: str, summary: str) -> DBSession:
+    def create(self, sender_id: str, receiver_id: str, subject: str) -> DBSession:
         """Create a new session."""
         session = DBSession(
             session_id=str(uuid.uuid4()),
             sender_id=sender_id,
             receiver_id=receiver_id,
-            summary=summary
+            subject=subject
         )
         self.db.add(session)
         self.db.commit()
@@ -80,14 +80,14 @@ class SessionRepository:
         return self.db.query(DBSession).filter(DBSession.session_id == session_id).first()
     
     def get_all(self) -> List[DBSession]:
-        """Get all sessions."""
+        """Get all email sessions."""
         return self.db.query(DBSession).all()
     
-    def update_summary(self, session_id: str, summary: str) -> Optional[DBSession]:
-        """Update session summary."""
+    def update_subject(self, session_id: str, subject: str) -> Optional[DBSession]:
+        """Update session subject."""
         session = self.get_by_id(session_id)
         if session:
-            self.db.query(DBSession).filter(DBSession.session_id == session_id).update({"summary": summary})
+            self.db.query(DBSession).filter(DBSession.session_id == session_id).update({"subject": subject})
             self.db.commit()
             return self.get_by_id(session_id)
         return None
