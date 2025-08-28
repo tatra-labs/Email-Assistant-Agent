@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from .config import engine, SessionLocal
-from .models import Base, SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message
+from .models import Base, SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteAISession as AISession
 import uuid
 
 
@@ -74,6 +74,15 @@ def create_sample_data():
         db.commit()
 
         print("Message added successfully...")
+
+        ai_session = AISession(
+            user_id=str(person1.id),
+        )
+
+        db.add(ai_session)
+        db.commit()
+
+        print("AI session added successfully...")
         
         print("Sample data created successfully!")
         

@@ -3,12 +3,20 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.inspection import inspect
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 import os
 import uuid 
 from datetime import datetime 
 
 # Database URL - can be configured via environment variable
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./email_assistant.db")
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 # Create SQLAlchemy engine
 engine = create_engine(

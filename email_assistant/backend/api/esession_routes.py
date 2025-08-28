@@ -12,9 +12,9 @@ from ..models.esession_models import (
     ESessionFetchRequest,
     ESessionFetchResponse
 )
-from ..services.session_service import SessionService
+from ..services.esession_service import SessionService
 
-router = APIRouter(prefix="/esession", tags=["sessions"])
+router = APIRouter(prefix="/esession", tags=["esessions"])
 
 
 @router.post("/create", response_model=ESessionCreateResponse)

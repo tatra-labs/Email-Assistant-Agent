@@ -126,6 +126,18 @@ class SQLitePerson(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    # Relationships
+    sessions_sent = relationship(
+        "SQLiteSession",
+        foreign_keys="SQLiteSession.sender_id",
+        back_populates="sender"
+    )
+    sessions_received = relationship(
+        "SQLiteSession",
+        foreign_keys="SQLiteSession.receiver_id",
+        back_populates="receiver"
+    )
+
 
 class SQLiteSession(Base):
     """Session model for SQLite compatibility."""
@@ -138,6 +150,22 @@ class SQLiteSession(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    # Relationships
+    messages = relationship(
+        "SQLiteMessage",
+        back_populates="session",
+        cascade="all, delete-orphan"
+    )
+    sender = relationship(
+        "SQLitePerson",
+        foreign_keys=[sender_id],
+        back_populates="sessions_sent"
+    )
+    receiver = relationship(
+        "SQLitePerson",
+        foreign_keys=[receiver_id],
+        back_populates="sessions_received"
+    )
 
 class SQLiteMessage(Base):
     """Message model for SQLite compatibility."""
@@ -153,6 +181,12 @@ class SQLiteMessage(Base):
     is_draft = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    session = relationship(
+        "SQLiteSession",
+        back_populates="messages"
+    )
 
 
 class SQLiteAISession(Base):

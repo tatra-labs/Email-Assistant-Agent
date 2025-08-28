@@ -1,11 +1,9 @@
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 from sqlalchemy.orm import Session
-import uuid
 import os 
 
 from .config import get_db
-from .repositories import SessionRepository, MessageRepository, PersonRepository
-from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message
+from .repositories import SessionRepository, MessageRepository
 
 
 class DatabaseSessionService:

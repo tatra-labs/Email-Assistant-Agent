@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 import uuid
 
-from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message
+from .models import SQLitePerson as Person, SQLiteSession as DBSession, SQLiteMessage as Message, SQLiteAISession as AISession
 
 from ..engine.utils.pdf_parser import extract_text_from_pdf
 
@@ -154,3 +154,25 @@ class MessageRepository:
             self.db.commit()
             return True
         return False
+    
+
+class AISessionRepository:
+    """Repository for AI Session operations."""
+    
+    def __init__(self, db: Session):
+        self.db = db
+    
+    def create(self, user_id: str) -> AISession:
+        """Create a new session."""
+        session = AISession(
+            session_id=str(uuid.uuid4()),
+            user_id=user_id,
+        )
+        self.db.add(session)
+        self.db.commit()
+        self.db.refresh(session)
+        return session
+    
+    def get_by_id(self, session_id: str) -> Optional[AISession]:
+        """Get AI session by ID."""
+        return self.db.query(AISession).filter(AISession.session_id == session_id).first()
