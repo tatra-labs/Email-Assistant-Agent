@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 
 
 from ..database.aisession_service_db import AISessionService
-from ..database.session_service_db import DatabaseSessionService
+from ..database.esession_service_db import DatabaseSessionService
 from ..database.person_service_db import DatabasePersonService 
 
 from ..engine.agents.sox_chat import SoxChat 

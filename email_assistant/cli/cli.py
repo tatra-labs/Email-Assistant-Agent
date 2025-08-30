@@ -4,7 +4,6 @@ import argparse
 import sys
 from typing import Optional
 
-from .session import ChatSession
 from .backends import get_backend
 
 

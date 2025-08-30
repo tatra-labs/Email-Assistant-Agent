@@ -1,5 +1,5 @@
 # Email-Assistant-Agent
-A personal assistant AI agent to help with email intelligence
+Sox - a personal assistant AI agent to help with email intelligence
 
 ## Project Structure
 
@@ -8,32 +8,41 @@ Email-Assistant-Agent/
 ├── email_assistant/         # Main package
 │   ├── backend/             # Backend logic and endpoints
 │   │   ├── api/             # FastAPI endpoints
-│   │   │   └── session_routes.py
+│   │   │   ├── esession_routes.py
+│   │   │   ├── aisession_routes.py
+│   │   │   └── person_routes.py
 │   │   ├── services/        # Business logic services
-│   │   │   └── session_service.py
+│   │   │   ├── esession_service.py
+│   │   │   ├── aisession_service.py
+│   │   │   └── person_service.py
 │   │   ├── models/          # Data models
 │   │   │   ├── esession_models.py
-│   │   │   ├── person_models.py
-│   │   │   └── aisession_models.py
+│   │   │   ├── aisession_models.py
+│   │   │   └── person_models.py
 │   │   ├── database/        # Database configuration and models
 │   │   │   ├── config.py    # Database connection
 │   │   │   ├── models.py    # SQLAlchemy models
 │   │   │   ├── repositories.py # Data access layer
+│   │   │   ├── session_service_db.py    # Email Session Database connection
+│   │   │   ├── aisession_service_db.py    # AI Session Database connection
+│   │   │   ├── person_service_db.py    # Database connection
 │   │   │   └── init_db.py   # Database initialization
 │   │   ├── engine/          # AI engine (LLM + LangGraph)
 │   │   │   ├── llm/         # LLM providers
 │   │   │   │   ├── base.py  # Base LLM interface
-│   │   │   │   └── mock_llm.py
-│   │   │   ├── langgraph/   # LangGraph workflows
-│   │   │   │   └── email_workflow.py
+│   │   │   │   ├── aws_llm.py # Not implemented yet
+│   │   │   │   └── gcp_llm.py
 │   │   │   ├── agents/      # AI agents
-│   │   │   │   └── email_assistant_agent.py
+│   │   │   │   ├── sox_agent.py
+│   │   │   │   ├── sox_chat.py
+│   │   │   │   └── prompts.py
 │   │   │   └── utils/       # Utilities 
 │   │   │       └── pdf_parser.py 
 │   │   └── main.py          # FastAPI application
 │   ├── cli/                 # CLI interface
 │   │   ├── cli.py           # Main CLI logic
 │   │   ├── backends.py      # Backend factory
+│   │   ├── base.py      # Base Backend
 │   │   └── fastapi_backend.py # FastAPI HTTP client
 │   ├── __init__.py          # Package initializer
 │   └── __main__.py          # Module entry point
@@ -44,14 +53,10 @@ Email-Assistant-Agent/
 
 ## Architecture
 
-### **Unified Design**
-- **Single Package**: All functionality is contained within `email_assistant` package
-- **Shared Core**: Both CLI and backend use the same core functions
-- **Clean Separation**: Backend endpoints and CLI commands use identical business logic
-
-### **Core Layer** (`email_assistant/core/`)
-- **SessionManager**: Central session management used by both CLI and backend
-- **Shared Functions**: Common functionality accessible to all components
+### **CLI Layer** (`email_assistant/cli/`)
+- **Command Interface**: User-friendly command-line interface
+- **Backend Adapters**: Pluggable backend implementations
+- **Same Core**: Uses identical core functions as backend
 
 ### **Backend Layer** (`email_assistant/backend/`)
 - **API Routes**: FastAPI endpoints for session management
@@ -59,10 +64,11 @@ Email-Assistant-Agent/
 - **Database**: SQLAlchemy models and repositories for data persistence
 - **Engine**: AI processing with LangGraph and LLM integration
 
-### **CLI Layer** (`email_assistant/cli/`)
-- **Command Interface**: User-friendly command-line interface
-- **Backend Adapters**: Pluggable backend implementations
-- **Same Core**: Uses identical core functions as backend
+### **Unified Design**
+- **Single Package**: All functionality is contained within `email_assistant` package
+- **Shared Core**: Both CLI and backend use the same core functions
+- **Clean Separation**: Backend endpoints and CLI commands use identical business logic
+
 
 ## Quickstart
 
@@ -112,7 +118,9 @@ python -m email_assistant session_delete --session_id <session_id>
 2. **session_create** - Create a new session and return session ID
 3. **session_delete --session_id <id>** - Delete session with given ID
 4. **session_edit --session_id <id> --element_id <msg_id> --content <content>** - Edit message in session
-5. **session_chat --session_id <id> --content <content>** - Add message to session and get response
+5. **session_chat --session_id <id> --sender_id <sender_id> --receiver_id <receiver_id> --message_text <message_text> [--file_path <file_path>]** - Add message to session and get response
+6. **aisession_create --esession_id <esession_id>** - Create AI session on email session
+7. **aisession_chat --aisession_id <aisession_id> --message <message> --context <context>** - Chat with sox
 
 ### Examples
 
@@ -133,8 +141,6 @@ python -m email_assistant session_delete --session_id abc123
 ### API Documentation
 
 Once the server is running, you can access:
-- **Interactive API docs**: http://localhost:8000/docs
-- **ReDoc documentation**: http://localhost:8000/redoc
 - **Health check**: http://localhost:8000/health
 
 ## Database Schema
@@ -147,31 +153,31 @@ Once the server is running, you can access:
    - `email_address`: Email address
    - `phone_number`: Phone number
 
-2. **Session** - Email conversation session
-   - `session_id`: UUID primary key
+2. **Email Session** - Email conversation session
+   - `id`: UUID primary key
    - `subject`: Session subject text
+   - `sender_id`: Foreign key to Person (sender)
+   - `receiver_id`: Foreign key to Person (receiver)
    - `created_at`: Creation timestamp
    - `updated_at`: Last update timestamp
 
 3. **Message** - Individual messages within a session
-   - `message_id`: UUID primary key
-   - `session_id`: Foreign key to Session
+   - `id`: UUID primary key
+   - `esession_id`: Foreign key to Email Session
    - `sender_id`: Foreign key to Person (sender)
    - `receiver_id`: Foreign key to Person (receiver)
    - `message_text`: Message content
+   - `file_text`: File content
    - `created_at`: Creation timestamp
 
-4. **MessageFile** - File attachments for messages
-   - `id`: UUID primary key
-   - `message_id`: Foreign key to Message
-   - `file_path`: File path on disk
-   - `file_content`: Parsed text content
-   - `file_type`: File type (pdf, docx, txt, etc.)
-   - `file_size`: File size
+4. **AI Session** - AI session (Sox chat) 
+   - `id`: UUID primary key 
+   - `esession_id`: Foreign key to Email Session
+   - `created_at`: Creation timestamp
+   - `updated_at`: Last update timestamp
 
 ### **Relationships**
 - One Session has many Messages
-- One Message has many MessageFiles
 - One Person can be sender/receiver of many Messages
 - Cascade deletes ensure data integrity
 
@@ -184,16 +190,7 @@ Once the server is running, you can access:
 5. **Consistent Behavior**: CLI and API behave identically
 6. **Scalable**: Easy to add new LLM providers and workflows
 
-## Roadmap
-
-- Real LLM integration (Amazon Bedrock / Google Gemini)
-- Email parsing (text/PDF) and structured extraction
-- Draft reply generation and tone control
-- Iterative refinement and saving drafts to file
-- PostgreSQL/MySQL support for production
-- File upload and parsing endpoints
-
-### LLM choice reasoning 
+## LLM choice reasoning 
 
 For an email-assistant agent, we want a conversational model with strong context and safety. Two leading enterprise options are Amazon Bedrock (AWS) amd Google Vertex AI (GCP):
 
@@ -202,3 +199,19 @@ For an email-assistant agent, we want a conversational model with strong context
 - GCP (Vertex AI with Google Gemini) - Vertex offers Google's latest Gemini 2.5 chat models which are multimodal and excel at content generation, summarization and extraction. Google explicitly cites summarization, classification and structured extraction as common tasks for Gemini. Vertex AI also provides enterprise security. 
 
 As long as each platform has LangChain integration (`ChatBedrock` for AWS, `ChatVertexAI` for GCP) so I will implement both options. Hopefully I can evaluate further in the real environment using another pipeline.
+
+
+## Architecture Diagram 
+**Database Schema**
+![Database Schema](resources/images/database_schema.png) 
+
+**Sox Architecture**
+![Sox Architecture](resources/images/sox_architecture.png)
+
+## Necessary Files 
+You can access diagram file here: [resources/files/sox_diagram.drawio](resources/files/sox_diagram.drawio)
+
+You can access postman checkpoint here: [resources/files/sox.postman_collection.json](resources/files/sox.postman_collection.json)
+
+If you have any questions, please let me know. 
+[Tatrab Labs](mailto:tatra.labs@gmail.com)

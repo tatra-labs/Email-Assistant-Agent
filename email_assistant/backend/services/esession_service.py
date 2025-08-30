@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 
 import os
 from dotenv import load_dotenv
-from ..database.session_service_db import DatabaseSessionService
+from ..database.esession_service_db import DatabaseSessionService
 
 class SessionService:
     """Service layer for session management and AI coordination using the database."""
