@@ -192,3 +192,13 @@ Once the server is running, you can access:
 - Iterative refinement and saving drafts to file
 - PostgreSQL/MySQL support for production
 - File upload and parsing endpoints
+
+### LLM choice reasoning 
+
+For an email-assistant agent, we want a conversational model with strong context and safety. Two leading enterprise options are Amazon Bedrock (AWS) amd Google Vertex AI (GCP):
+
+- AWS (Amazon Bedrock with Anthropic Claude) - Bedrock lets you use state-of-the-art chat models like Claude 3 Haiku/Sonnet. Claude excels at dialogue, summarization and extracting structured info (from emails). It supports very long contexts (up to 200K+ tokens) so it can handle entire email threads. Bedrock is also serverless and enterprise-grade (AWS identity/credentials) and integrates easily via `langchain-aws` library. 
+
+- GCP (Vertex AI with Google Gemini) - Vertex offers Google's latest Gemini 2.5 chat models which are multimodal and excel at content generation, summarization and extraction. Google explicitly cites summarization, classification and structured extraction as common tasks for Gemini. Vertex AI also provides enterprise security. 
+
+As long as each platform has LangChain integration (`ChatBedrock` for AWS, `ChatVertexAI` for GCP) so I will implement both options. Hopefully I can evaluate further in the real environment using another pipeline.

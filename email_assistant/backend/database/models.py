@@ -194,6 +194,6 @@ class SQLiteAISession(Base):
     __tablename__ = "aisessions"
     
     session_id = Column(SQLiteUUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(SQLiteUUID(), ForeignKey("persons.id"), nullable=False)
+    esession_id = Column(SQLiteUUID(), ForeignKey("esessions.session_id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

@@ -17,12 +17,24 @@ class AISessionService:
             self.db = next(get_db())
         return self.db
     
-    def create_session(self, user_id: str) -> str:
+    def get_session(self, session_id: str):
+        """Get a session in the database."""
+        try:
+            db = self._get_db()
+            aisession_repo = AISessionRepository(db)
+            session = aisession_repo.get_by_id(session_id)
+            if not session:
+                raise ValueError(f"Session {session_id} not found")
+            return session
+        except Exception as e:
+            raise e
+    
+    def create_session(self, esession_id: str) -> str:
         """Create a new session in the database."""
         try:
             db = self._get_db()
             aisession_repo = AISessionRepository(db)
-            session = aisession_repo.create(user_id)
+            session = aisession_repo.create(esession_id)
             return str(session.session_id)
         except Exception as e:
             raise e
