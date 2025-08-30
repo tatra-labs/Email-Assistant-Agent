@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from.api.person_routes import router as person_router
-from .api.session_routes import router as session_router
+from .api.esession_routes import router as esession_router
+from .api.aisession_routes import router as aisession_router
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -23,7 +24,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(person_router)
-app.include_router(session_router)
+app.include_router(esession_router)
+app.include_router(aisession_router)
 
 @app.get("/")
 async def root():

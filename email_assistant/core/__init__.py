@@ -1,1 +1,0 @@
-# Core functionality shared between CLI and backend 

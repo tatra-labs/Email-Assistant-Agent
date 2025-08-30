@@ -2,10 +2,21 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from sqlalchemy.inspection import inspect
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 import os
+import uuid 
+from datetime import datetime 
 
 # Database URL - can be configured via environment variable
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./email_assistant.db")
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 # Create SQLAlchemy engine
 engine = create_engine(
@@ -18,8 +29,25 @@ engine = create_engine(
 # Create SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
+# Create BaseModel class for models
+class BaseModel:
+    __abstract__ = True
+
+    def to_dict(self):
+        result = {}
+        for c in inspect(self).mapper.column_attrs: # type: ignore
+            value = getattr(self, c.key)
+            # Convert UUIDs and datetimes to string
+            if isinstance(value, uuid.UUID):
+                value = str(value)
+            elif isinstance(value, datetime):
+                value = value.isoformat()
+            result[c.key] = value
+        return result
+
 # Create Base class for models
-Base = declarative_base()
+Base = declarative_base(cls=BaseModel)
 
 # Dependency to get database session
 def get_db():

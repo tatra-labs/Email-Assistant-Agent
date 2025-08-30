@@ -73,18 +73,56 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         except Exception as e:
             raise Exception(f"Failed to edit message: {e}")
     
-    def session_chat(self, session_id: str, message_content: str) -> str:
+    def session_chat(self, session_id: str, sender_id: str, receiver_id: str, message_text: str, file_path: Optional[str]) -> str:
         """Add message to session and get response via FastAPI."""
         import asyncio
         try:
             result = asyncio.run(self._make_request("POST", "/session/chat", {
                 "session_id": session_id,
-                "content": message_content
+                "sender_id": sender_id,
+                "receiver_id": receiver_id,
+                "message_text": message_text,
+                "file_path": file_path
             }))
             return result["response"]
         except Exception as e:
             raise Exception(f"Failed to process message: {e}")
+        
+    def session_fetch(self, session_id: str) -> str:
+        """Add message to session and get response via FastAPI."""
+        import asyncio
+        try:
+            result = asyncio.run(self._make_request("POST", "/session/fetch", {
+                "session_id": session_id
+            }))
+            return result["response"]
+        except Exception as e:
+            raise Exception(f"Failed to process message: {e}")
+        
+    def aisession_create(self, esession_id: str) -> str:
+        """Create AI session via FastAPI.""" 
+        import asyncio 
+        try:
+            result = asyncio.run(self._make_request("POST", "/aisession/create", {
+                "esession_id": esession_id
+            }))
+            return result["aisession_id"]
+        except Exception as e:
+            raise Exception(f"Failed to process message: {e}")
     
+    def chat_with_sox(self, aisession_id: str, message: str, context) -> str:
+        """Chat with Sox via FastAPI.""" 
+        import asyncio 
+        try:
+            result = asyncio.run(self._make_request("POST", "/aisession/create", {
+                "aisession_id": aisession_id,
+                "message": message,
+                "context": context
+            }))
+            return result["response"]
+        except Exception as e:
+            raise Exception(f"Failed to process message: {e}")
+
     def __del__(self):
         """Cleanup HTTP client."""
         if hasattr(self, 'client'):

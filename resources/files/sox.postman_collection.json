@@ -1,0 +1,234 @@
+{
+	"info": {
+		"_postman_id": "1559cd59-c31a-4680-ab92-d98e1b933761",
+		"name": "Email-Assistant-Agent",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44652909",
+		"_collection_link": "https://tatralabs.postman.co/workspace/Tatra-Labs's-Workspace~a2bd76cf-85db-4cc3-81aa-f66d90d9833d/collection/44652909-1559cd59-c31a-4680-ab92-d98e1b933761?action=share&source=collection_link&creator=44652909"
+	},
+	"item": [
+		{
+			"name": "person_create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"John Smith\", \r\n    \"email\": \"john.smith0000@gmail.com\", \r\n    \"phone_number\": \"+1234567892\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/person/create",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"person",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person_seek_by_email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"john.doe@example.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/person/seekbyemail",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"person",
+						"seekbyemail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person_seek_by_id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"6935540c-7bc3-4d68-9cec-fbdd819fea4f\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/person/seekbyid",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"person",
+						"seekbyid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "session_create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sender_id\": \"199ac303-19b2-4cff-bfb7-b13e8fecaa08\", \r\n    \"receiver_id\": \"7a497427-ec55-465a-aaab-9cd47892b61d\",\r\n    \"summary\": \"Plans for assistant development\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/esession/create",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"esession",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "session_chat",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"session_id\": \"90b9ec83-6f00-4491-a315-0766d6cce97d\",\r\n    \"sender_id\": \"cbdb647f-b425-4424-908c-064303d0071c\",\r\n    \"receiver_id\": \"3b39ab8c-5a1b-4826-8cd4-690752f57e90\",\r\n    \"message_text\": \"Another file!\",\r\n    \"file_path\": \"test.pdf\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/esession/chat",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"esession",
+						"chat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "session_fetch",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"session_id\": \"90b9ec83-6f00-4491-a315-0766d6cce97d\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/esession/fetch",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"esession",
+						"fetch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "aisession_create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"esession_id\": \"a2e2e880-0ca1-4b7a-ba35-172b92f33aea\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/aisession/create",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"aisession",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "chat_with_sox",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"aisession_id\": \"99a2c779-6e6a-4828-8502-4f6dbf6d8e34\",\r\n    \"message\": \"can you write a reply to a file?\",\r\n    \"context\": null\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/aisession/chat_with_sox",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"aisession",
+						"chat_with_sox"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
