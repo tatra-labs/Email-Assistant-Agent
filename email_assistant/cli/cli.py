@@ -103,7 +103,7 @@ def handle_session_chat(session_id: str, sender_id: str, receiver_id: str, messa
 
 
 def handle_session_fetch(session_id: str) -> int:
-    """Fetch all the details of session""" 
+    """Fetch all the details of session.""" 
     if not session_id:
         print("Error: session_id is required") 
         return 1 
@@ -117,6 +117,38 @@ def handle_session_fetch(session_id: str) -> int:
     except Exception as e:
         print(f"Error fetching of session {session_id}: {e}") 
         return 1 
+    
+def handle_aisession_create(esession_id: str) -> int:
+    """Create a new AI session."""
+    if not esession_id:
+        print("Error: Email Session ID is required") 
+        return 1 
+    
+    try:
+        backend = get_backend()
+        response = backend.aisession_create(esession_id)  
+        print(f"Created AI session successfully") 
+        print(f"Response: {response}") 
+        return 0 
+    except Exception as e:
+        print(f"Error creating a new AI session") 
+        return 1 
+    
+def handle_aisession_chat(aisession_id, message, context):
+    """Chat with AI email assistant, Sox."""
+    if not aisession_id or not message:
+        print("Error: AI Session ID and message are required") 
+        return 1 
+    
+    try:
+        backend = get_backend()
+        response = backend.chat_with_sox(aisession_id, message, context)  
+        print(f"Response: {response}") 
+        return 0 
+    except Exception as e:
+        print(f"Error texting Sox") 
+        return 1 
+
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -157,6 +189,16 @@ def build_parser() -> argparse.ArgumentParser:
     # Session fetch command
     fetch_parser = subparsers.add_parser("session_fetch", help="Fetch all the details of session") 
     fetch_parser.add_argument("--session_id", required=True, help="Session ID") 
+
+    # AI session create command 
+    aisession_create_parser = subparsers.add_parser("aisession_create", help="Create a AI session") 
+    aisession_create_parser.add_argument("--esession_id", required=True, help="Email session the user is interested in") 
+
+    # AI session chat 
+    aisession_chat_parser = subparsers.add_parser("aisession_chat", help="Chat with Sox - AI assistant") 
+    aisession_chat_parser.add_argument("--aisession_id", required=True, help="AI session ID") 
+    aisession_chat_parser.add_argument("--message", required=True, help="Message") 
+    aisession_chat_parser.add_argument("--context", required=False, help="Context such as theme, style, ...")  
     
     return parser
 
@@ -179,6 +221,10 @@ def main(argv: Optional[list[str]] = None) -> None:
         sys.exit(handle_session_chat(args.session_id, args.sender_id, args.receiver_id, args.message_text, args.file_path))
     elif command == "session_fetch":
         sys.exit(handle_session_fetch(args.session_id))
+    elif command == "aisession_create":
+        sys.exit(handle_aisession_create(args.esession_id)) 
+    elif command == "aisession_chat":
+        sys.exit(handle_aisession_chat(args.aisession_id, args.message, args.context))
     else:
         print(f"Unknown command: {command}")
         print("Use 'help' command to see available commands")
