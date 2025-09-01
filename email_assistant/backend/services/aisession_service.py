@@ -25,7 +25,11 @@ class SessionService:
         session_info = db_session_service.get_session_info(esession_id) 
 
         _ = load_dotenv("../../../../.env")
-        self_user_id = os.getenv("SELF_USER_ID")
+        self_user_email = os.getenv("SELF_USER_EMAIL")
+
+        db_person_service = DatabasePersonService() 
+        self_person = db_person_service.seek_person_by_email(str(self_user_email))
+        self_user_id = self_person.id
 
         session_info = sanitize_session_info(session_info, self_user_id)
 
