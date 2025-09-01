@@ -239,4 +239,4 @@ You can access diagram file here: [resources/files/sox_diagram.drawio](resources
 You can access postman checkpoint here: [resources/files/sox.postman_collection.json](resources/files/sox.postman_collection.json)
 
 If you have any questions, please let me know. 
-[Tatrab Labs](mailto:tatra.labs@gmail.com)
+[Tatra Labs](mailto:tatra.labs@gmail.com)
