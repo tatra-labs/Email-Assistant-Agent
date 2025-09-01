@@ -37,13 +37,27 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         except httpx.RequestError as e:
             raise Exception(f"Request failed: {e}")
     
-    def session_create(self, sender_id, receiver_id) -> str:
+    def person_create(self, name, email, phone_number):
+        """Create a new person via FastAPI."""
+        import asyncio
+        try:
+            result = asyncio.run(self._make_request("POST", "/person/create", {
+                "name": name,
+                "email": email,
+                "phone_number": phone_number
+            }))
+            return result["person_id"]
+        except Exception as e:
+            raise Exception(f"Failed to create person: {e}")
+
+    def session_create(self, sender_id, receiver_id, subject) -> str:
         """Create a new session via FastAPI."""
         import asyncio
         try:
-            result = asyncio.run(self._make_request("POST", "/session/create", {
+            result = asyncio.run(self._make_request("POST", "/esession/create", {
                 "sender_id": sender_id,
-                "receiver_id": receiver_id
+                "receiver_id": receiver_id,
+                "subject": subject
             }))
             return result["session_id"]
         except Exception as e:
@@ -53,7 +67,7 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         """Delete a session via FastAPI."""
         import asyncio
         try:
-            result = asyncio.run(self._make_request("POST", "/session/delete", {
+            result = asyncio.run(self._make_request("POST", "/esession/delete", {
                 "session_id": session_id
             }))
             return result["success"]
@@ -64,7 +78,7 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         """Edit a message in session via FastAPI."""
         import asyncio
         try:
-            result = asyncio.run(self._make_request("POST", "/session/edit", {
+            result = asyncio.run(self._make_request("POST", "/esession/edit", {
                 "session_id": session_id,
                 "element_id": message_id,
                 "content": message_content
@@ -77,7 +91,7 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         """Add message to session and get response via FastAPI."""
         import asyncio
         try:
-            result = asyncio.run(self._make_request("POST", "/session/chat", {
+            result = asyncio.run(self._make_request("POST", "/esession/chat", {
                 "session_id": session_id,
                 "sender_id": sender_id,
                 "receiver_id": receiver_id,
@@ -92,7 +106,7 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         """Add message to session and get response via FastAPI."""
         import asyncio
         try:
-            result = asyncio.run(self._make_request("POST", "/session/fetch", {
+            result = asyncio.run(self._make_request("POST", "/esession/fetch", {
                 "session_id": session_id
             }))
             return result["response"]
@@ -114,7 +128,7 @@ class FastAPIBackend(BaseEmailAssistantBackend):
         """Chat with Sox via FastAPI.""" 
         import asyncio 
         try:
-            result = asyncio.run(self._make_request("POST", "/aisession/create", {
+            result = asyncio.run(self._make_request("POST", "/aisession/chat_with_sox", {
                 "aisession_id": aisession_id,
                 "message": message,
                 "context": context

@@ -30,8 +30,8 @@ Email-Assistant-Agent/
 │   │   ├── engine/          # AI engine (LLM + LangGraph)
 │   │   │   ├── llm/         # LLM providers
 │   │   │   │   ├── base.py  # Base LLM interface
-│   │   │   │   ├── aws_llm.py # Not implemented yet
-│   │   │   │   └── gcp_llm.py
+│   │   │   │   ├── aws_llm.py 
+│   │   │   │   └── gcp_llm.py # Not implemented yet
 │   │   │   ├── agents/      # AI agents
 │   │   │   │   ├── sox_agent.py
 │   │   │   │   ├── sox_chat.py
@@ -69,6 +69,18 @@ Email-Assistant-Agent/
 - **Shared Core**: Both CLI and backend use the same core functions
 - **Clean Separation**: Backend endpoints and CLI commands use identical business logic
 
+## Project Logic 
+
+### What is Email Session? 
+
+While using email, we see you and other person are replying each other over one subject. I want to model this conversation on email and try to bring intelligence for management. So Email Session contains `session_id`, `sender_id` (who initially started the conversation), `receiver_id`, `subject` (the topic of conversation the sender set). I didn't integrate email api but it is fully operable and expressive enough for compatibility. 
+
+### What is AI Session? 
+
+The user will ask intelligence over a certain email session. He/She can ask arbitrary questions like below. 
+- Could you write a reply for me?
+- Could you summarize the overall conversation? 
+
 
 ## Quickstart
 
@@ -87,10 +99,20 @@ python init_database.py
 
 This will create:
 - `email_assistant.db` SQLite database file
-- Tables for sessions, messages, persons, and files
+- Tables for sessions, messages, and persons
 - Sample data for testing
 
-### 3. Start the FastAPI Server
+### 3. Environment Variables
+
+You need to add your email in `email_assistant.db` and its path in .env
+```bash
+SELF_USER_EMAIL=john.doe@example.com
+DATABASE_URL=sqlite:///./email_assistant.db
+```
+
+Also add AWS credentials such as `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN`. 
+
+### 4. Start the FastAPI Server
 
 ```bash
 # Option 1: Using the startup script
@@ -102,25 +124,26 @@ uvicorn email_assistant.backend.main:app --host 0.0.0.0 --port 8000 --reload
 
 The server will be available at `http://localhost:8000`
 
-### 4. Use the CLI
+### 5. Use the CLI
 
 ```bash
 # From the repository root
 python -m email_assistant help
-python -m email_assistant session_create
+python -m email_assistant 
+python -m email_assistant session_create --sender_id <sender_id> --receiver_id <receiver_id> --subject <subject>  
 python -m email_assistant session_chat --session_id <session_id> --content "Hello, how are you?"
-python -m email_assistant session_delete --session_id <session_id>
+python -m email_assistant aisession_create --esession_id <esession_id> 
 ```
 
-### Available Commands
+### 6. Available Commands
 
 1. **help** - Show help message with all available commands
-2. **session_create** - Create a new session and return session ID
-3. **session_delete --session_id <id>** - Delete session with given ID
-4. **session_edit --session_id <id> --element_id <msg_id> --content <content>** - Edit message in session
-5. **session_chat --session_id <id> --sender_id <sender_id> --receiver_id <receiver_id> --message_text <message_text> [--file_path <file_path>]** - Add message to session and get response
-6. **aisession_create --esession_id <esession_id>** - Create AI session on email session
-7. **aisession_chat --aisession_id <aisession_id> --message <message> --context <context>** - Chat with sox
+2. **session_create** - Create a new email session and return session ID
+3. **session_delete --session_id <id>** - Delete an email session with given ID
+4. **session_edit --session_id <id> --element_id <msg_id> --content <content>** - Edit message in email session
+5. **session_chat --session_id <id> --sender_id <sender_id> --receiver_id <receiver_id> --message_text <message_text> [--file_path <file_path>]** - Add message of an email session
+6. **aisession_create --esession_id <esession_id>** - Create a new AI session on email session
+7. **chat_with_sox --aisession_id <aisession_id> --message <message> --context <context>** - Chat with sox
 
 ### Examples
 
@@ -167,7 +190,9 @@ Once the server is running, you can access:
    - `sender_id`: Foreign key to Person (sender)
    - `receiver_id`: Foreign key to Person (receiver)
    - `message_text`: Message content
-   - `file_text`: File content
+   - `message_file`: Attached file path 
+   - `file_text`: File content parsed from file
+   - `is_draft`: Draft email or not
    - `created_at`: Creation timestamp
 
 4. **AI Session** - AI session (Sox chat) 
@@ -198,7 +223,7 @@ For an email-assistant agent, we want a conversational model with strong context
 
 - GCP (Vertex AI with Google Gemini) - Vertex offers Google's latest Gemini 2.5 chat models which are multimodal and excel at content generation, summarization and extraction. Google explicitly cites summarization, classification and structured extraction as common tasks for Gemini. Vertex AI also provides enterprise security. 
 
-As long as each platform has LangChain integration (`ChatBedrock` for AWS, `ChatVertexAI` for GCP) so I will implement both options. Hopefully I can evaluate further in the real environment using another pipeline.
+Each platform has LangChain integration (`ChatBedrock` for AWS, `ChatVertexAI` for GCP). I don't have enough time so I will implement the cases only for AWS Bedrock LLMs. 
 
 
 ## Architecture Diagram 
