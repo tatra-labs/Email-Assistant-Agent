@@ -32,15 +32,26 @@ def handle_help() -> int:
     return 0
 
 
-def handle_session_create(sender_id: str, receiver_id: str) -> int:
+def handle_person_create(name: str, email: str, phone_number: str) -> int:
     """Create a new session and return session ID."""
     try:
         backend = get_backend()
-        session_id = backend.session_create(sender_id, receiver_id)
-        print(f"Session created successfully. Session ID: {session_id}")
+        session_id = backend.person_create(name, email, phone_number)
+        print(f"Person created successfully. Person ID: {session_id}")
         return 0
     except Exception as e:
-        print(f"Error creating session: {e}")
+        print(f"Error creating person: {e}")
+        return 1
+
+def handle_session_create(sender_id: str, receiver_id: str, subject: str) -> int:
+    """Create a new session and return session ID."""
+    try:
+        backend = get_backend()
+        session_id = backend.session_create(sender_id, receiver_id, subject)
+        print(f"Email session created successfully. Email session ID: {session_id}")
+        return 0
+    except Exception as e:
+        print(f"Error creating email session: {e}")
         return 1
 
 
@@ -162,28 +173,35 @@ def build_parser() -> argparse.ArgumentParser:
     # Help command
     help_parser = subparsers.add_parser("help", help="Show help message")
     
+    # Person create command
+    person_create_parser = subparsers.add_parser("person_create", help="Create a new person") 
+    person_create_parser.add_argument("--name", required=True, help="Name of a person") 
+    person_create_parser.add_argument("--email", required=True, help="Email address of a person") 
+    person_create_parser.add_argument("--phone_number", required=True, help="Phone number of a person") 
+
     # Session create command
-    create_parser = subparsers.add_parser("session_create", help="Create a new session")
-    create_parser.add_argument("--sender_id", required=False, help="Sender ID (optional)")
-    create_parser.add_argument("--receiver_id", required=False, help="Receiver ID (optional)")
-    
+    session_create_parser = subparsers.add_parser("session_create", help="Create a new session")
+    session_create_parser.add_argument("--sender_id", required=True, help="Sender ID (optional)")
+    session_create_parser.add_argument("--receiver_id", required=True, help="Receiver ID (optional)")
+    session_create_parser.add_argument("--subject", required=True, help="Subject of new email session")
+
     # Session delete command
-    delete_parser = subparsers.add_parser("session_delete", help="Delete a session")
-    delete_parser.add_argument("--session_id", required=True, help="Session ID to delete")
+    session_delete_parser = subparsers.add_parser("session_delete", help="Delete a session")
+    session_delete_parser.add_argument("--session_id", required=True, help="Session ID to delete")
     
     # Session edit command
-    edit_parser = subparsers.add_parser("session_edit", help="Edit a message in a session")
-    edit_parser.add_argument("--session_id", required=True, help="Session ID")
-    edit_parser.add_argument("--element_id", required=True, help="Message ID to edit")
-    edit_parser.add_argument("--content", required=True, help="New message content")
+    session_edit_parser = subparsers.add_parser("session_edit", help="Edit a message in a session")
+    session_edit_parser.add_argument("--session_id", required=True, help="Session ID")
+    session_edit_parser.add_argument("--element_id", required=True, help="Message ID to edit")
+    session_edit_parser.add_argument("--content", required=True, help="New message content")
     
     # Session chat command
-    chat_parser = subparsers.add_parser("session_chat", help="Add message to session and get response")
-    chat_parser.add_argument("--session_id", required=True, help="Session ID")
-    chat_parser.add_argument("--sender_id", required=True, help="User ID of sender") 
-    chat_parser.add_argument("--receiver_id", required=True, help="User ID of receiver") 
-    chat_parser.add_argument("--message_text", required=True, help="Text content of message")
-    chat_parser.add_argument("--file_path", required=False, help="Path of attached file")
+    session_chat_parser = subparsers.add_parser("session_chat", help="Add message to session and get response")
+    session_chat_parser.add_argument("--session_id", required=True, help="Session ID")
+    session_chat_parser.add_argument("--sender_id", required=True, help="User ID of sender") 
+    session_chat_parser.add_argument("--receiver_id", required=True, help="User ID of receiver") 
+    session_chat_parser.add_argument("--message_text", required=True, help="Text content of message")
+    session_chat_parser.add_argument("--file_path", required=False, help="Path of attached file")
 
     # Session fetch command
     fetch_parser = subparsers.add_parser("session_fetch", help="Fetch all the details of session") 
@@ -210,8 +228,10 @@ def main(argv: Optional[list[str]] = None) -> None:
     
     if command == "help":
         sys.exit(handle_help())
+    elif command == "person_create":
+        sys.exit(handle_person_create(args.name, args.email, args.phone_number))
     elif command == "session_create":
-        sys.exit(handle_session_create(args.sender_id, args.receiver_id))
+        sys.exit(handle_session_create(args.sender_id, args.receiver_id, args.subject))
     elif command == "session_delete":
         sys.exit(handle_session_delete(args.session_id))
     elif command == "session_edit":
